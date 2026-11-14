@@ -108,4 +108,6 @@ GrammarBench/   tool benchmark model
 scripts/        fetch-llama.sh, download-model.sh
 ```
 
+**Chẩn đoán khi app không đọc đúng câu đang gõ** (ví dụ trình soạn thảo web): chạy `swift scripts/ax-probe.swift <bundle-id>` (ví dụ `com.google.Chrome`), chuyển sang app đó và đặt con trỏ vào ô đang gõ. Script đọc 3 giây sau khi app đó được đưa lên trước. Script chỉ đọc, và in ra những gì app trả về qua Accessibility: vị trí con trỏ theo `AXSelectedTextRange` và đoạn văn đọc qua text marker. Với ô hỗ trợ text marker (Chrome, Safari, Electron), Grammar đọc đoạn văn chứa con trỏ qua text marker, vì `AXSelectedTextRange` có thể bị lệch so với `AXValue` trong trình soạn thảo có định dạng.
+
 Model mặc định được khai báo ở `ModelLocator.defaultModelFileName`. Khi dev có thể chỉ định file model khác bằng biến môi trường `GRAMMAR_MODEL_PATH`.
