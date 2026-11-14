@@ -1,0 +1,14 @@
+# Model GGUF (vài GB) – tải bằng scripts/download-model.sh
+GrammarApp/Resources/Models/*
+!GrammarApp/Resources/Models/.gitkeep
+
+# llama.xcframework – tải bằng scripts/fetch-llama.sh
+Vendor/
+
+# Xcode / build (project được sinh từ project.yml bằng `xcodegen generate`)
+GrammarApp.xcodeproj/
+build/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+.DS_Store
