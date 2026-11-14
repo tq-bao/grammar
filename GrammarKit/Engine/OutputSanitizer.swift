@@ -46,4 +46,38 @@ public enum OutputSanitizer {
 
         return text.isEmpty ? trimmedOriginal : text
     }
+
+    private static let translationPrefixes = [
+        "vietnamese translation:", "translation:", "vietnamese:", "bản dịch:", "tiếng việt:",
+        "english:", "text:", "output:",
+    ]
+
+    /// Làm sạch bản dịch: lấy dòng đầu không rỗng, bỏ tiền tố kiểu "Translation:" và ngoặc kép bao ngoài.
+    /// Khác `clean`, hàm này không lấy câu gốc làm dự phòng: câu tiếng Anh trông như bản dịch sẽ gây hiểu nhầm.
+    /// - Throws: `GrammarEngineError.emptyTranslation` khi không còn gì sau khi làm sạch.
+    public static func cleanTranslation(_ output: String) throws -> String {
+        var text = output
+            .split(whereSeparator: \.isNewline)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .first { !$0.isEmpty } ?? ""
+
+        var stripped = true
+        while stripped {
+            stripped = false
+            let lower = text.lowercased()
+            for prefix in translationPrefixes where lower.hasPrefix(prefix) {
+                text = String(text.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+                stripped = true
+                break
+            }
+        }
+
+        for (open, close) in quotePairs where text.count >= 2 && text.first == open && text.last == close {
+            text = String(text.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+            break
+        }
+
+        guard !text.isEmpty else { throw GrammarEngineError.emptyTranslation }
+        return text
+    }
 }

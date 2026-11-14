@@ -5,6 +5,11 @@ public protocol GrammarEngine: Sendable {
     func correct(_ sentence: String) async throws -> String
 }
 
+/// Bộ dịch câu tiếng Anh sang tiếng Việt, chạy trên máy.
+public protocol TranslationEngine: Sendable {
+    func translate(_ sentence: String) async throws -> String
+}
+
 public enum GrammarEngineError: LocalizedError, Equatable {
     case modelNotFound(String)
     case modelLoadFailed(String)
@@ -12,6 +17,7 @@ public enum GrammarEngineError: LocalizedError, Equatable {
     case promptTemplateFailed
     case tokenizeFailed
     case decodeFailed(Int32)
+    case emptyTranslation
 
     public var errorDescription: String? {
         switch self {
@@ -27,6 +33,8 @@ public enum GrammarEngineError: LocalizedError, Equatable {
             "Không tách được token cho câu này."
         case let .decodeFailed(code):
             "Model gặp lỗi khi sinh kết quả (mã \(code))."
+        case .emptyTranslation:
+            "Model không trả về bản dịch."
         }
     }
 }

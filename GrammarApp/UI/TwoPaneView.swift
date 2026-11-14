@@ -3,7 +3,8 @@ import GrammarKit
 import SwiftUI
 
 /// Nội dung panel: phần trên là câu gốc (gạch chân đỏ cụm sai),
-/// phần dưới là câu đã sửa (tô xanh phần sửa). Chỉ để xem, nền trong suốt theo cài đặt.
+/// phần dưới là câu đã sửa (tô xanh phần sửa). Khi bật Dịch, có thêm section "Bản dịch"
+/// ở dưới cùng. Chỉ để xem, nền trong suốt theo cài đặt.
 struct TwoPaneView: View {
     let model: AppModel
 
@@ -71,6 +72,16 @@ struct TwoPaneView: View {
                 .font(.system(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let translationContent {
+                Divider()
+
+                Text("Bản dịch (tham khảo)").font(.headline)
+                Text(translationContent)
+                    .font(.system(size: 14))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(.horizontal, 14)
         .padding(.top, 8)
@@ -94,6 +105,23 @@ struct TwoPaneView: View {
             return coordinator.sentence.isEmpty
                 ? placeholder("Gõ một câu tiếng Anh ở bất kỳ app nào, hoặc bôi đen rồi bấm ⌃⌥G.")
                 : AttributedString(coordinator.sentence)
+        }
+    }
+
+    /// Nội dung section "Bản dịch". `nil` = ẩn section (Dịch đang tắt, hoặc chưa có gì để dịch).
+    private var translationContent: AttributedString? {
+        guard settings.translationEnabled else { return nil }
+        switch coordinator.translation {
+        case .hidden:
+            return nil
+        case .translating:
+            return placeholder("Đang dịch…")
+        case let .done(text):
+            return AttributedString(text)
+        case let .failed(message):
+            var s = AttributedString(message)
+            s.swiftUI.foregroundColor = .red
+            return s
         }
     }
 

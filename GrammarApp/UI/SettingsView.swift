@@ -12,7 +12,7 @@ extension PanelCorner {
     }
 }
 
-/// Màn hình Cài đặt: độ mờ nền, góc màn hình, độ rộng panel. Thay đổi áp dụng ngay.
+/// Màn hình Cài đặt: độ mờ nền, góc màn hình, độ rộng panel, bật/tắt Dịch. Thay đổi áp dụng ngay.
 struct SettingsView: View {
     @Bindable var settings: PanelSettings
 
@@ -58,6 +58,13 @@ struct SettingsView: View {
                             .monospacedDigit()
                             .frame(width: 56, alignment: .trailing)
                     }
+                }
+            }
+
+            Section("Dịch") {
+                Toggle(isOn: $settings.translationEnabled) {
+                    Text("Dịch sang tiếng Việt")
+                    Text("Hiện bản dịch của câu đã sửa dưới phần Câu đã sửa. Dịch ngay trên máy, hiện chậm hơn câu sửa một chút.")
                 }
             }
 

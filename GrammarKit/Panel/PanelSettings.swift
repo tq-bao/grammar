@@ -13,6 +13,7 @@ public final class PanelSettings {
     public static let defaultCorner = PanelCorner.topRight
     public static let defaultWidth = 460.0
     public static let defaultClickThrough = true
+    public static let defaultTranslationEnabled = false
 
     public enum Key {
         public static let opacity = "panel.backgroundOpacity"
@@ -20,6 +21,7 @@ public final class PanelSettings {
         public static let width = "panel.width"
         public static let clickThrough = "panel.clickThrough"
         public static let customTopLeft = "panel.customTopLeft"
+        public static let translationEnabled = "translation.enabled"
     }
 
     /// Độ mờ nền: 0 = trong suốt hoàn toàn, 1 = đục.
@@ -42,6 +44,11 @@ public final class PanelSettings {
     /// Click xuyên qua panel. Tắt để kéo panel đi chỗ khác.
     public var clickThrough: Bool {
         didSet { defaults.set(clickThrough, forKey: Key.clickThrough) }
+    }
+
+    /// Hiện bản dịch tiếng Việt của câu đã sửa dưới phần "Câu đã sửa".
+    public var translationEnabled: Bool {
+        didSet { defaults.set(translationEnabled, forKey: Key.translationEnabled) }
     }
 
     /// Góc trên trái của panel do người dùng kéo (toạ độ AppKit). `nil` = đặt theo `corner`.
@@ -76,6 +83,7 @@ public final class PanelSettings {
         width = Self.clamp(
             defaults.object(forKey: Key.width) as? Double, to: Self.widthRange, fallback: Self.defaultWidth)
         clickThrough = defaults.object(forKey: Key.clickThrough) as? Bool ?? Self.defaultClickThrough
+        translationEnabled = defaults.object(forKey: Key.translationEnabled) as? Bool ?? Self.defaultTranslationEnabled
         if let pair = defaults.array(forKey: Key.customTopLeft) as? [Double], pair.count == 2,
            pair.allSatisfy(\.isFinite) {
             customTopLeft = CGPoint(x: pair[0], y: pair[1])
@@ -94,6 +102,7 @@ public final class PanelSettings {
         corner = Self.defaultCorner
         width = Self.defaultWidth
         clickThrough = Self.defaultClickThrough
+        translationEnabled = Self.defaultTranslationEnabled
         customTopLeft = nil
     }
 

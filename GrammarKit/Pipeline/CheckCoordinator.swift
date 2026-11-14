@@ -16,6 +16,15 @@ public enum CheckState: Equatable, Sendable {
     case modelError(String)
 }
 
+/// Trạng thái của section "Bản dịch" trên panel.
+public enum TranslationState: Equatable, Sendable {
+    /// Không hiện section: tính năng tắt, hoặc chưa có kết quả sửa để dịch.
+    case hidden
+    case translating
+    case done(String)
+    case failed(String)
+}
+
 /// Nguồn của câu đang kiểm tra.
 public enum TextSource: Equatable, Sendable {
     case focusedField
@@ -33,13 +42,28 @@ public final class CheckCoordinator {
     public private(set) var source: TextSource = .focusedField
     public var isPaused = false
 
+    /// Bản dịch tiếng Việt của câu đã sửa (hoặc câu gốc khi câu đúng).
+    public private(set) var translation: TranslationState = .hidden
+
+    /// Bật thì dịch mỗi kết quả "không có lỗi"/"có lỗi". Bật khi đang có kết quả thì dịch ngay;
+    /// tắt thì huỷ bản dịch đang chạy và ẩn section.
+    public var isTranslationEnabled = false {
+        didSet {
+            guard isTranslationEnabled != oldValue else { return }
+            startTranslation()
+        }
+    }
+
     private var engine: (any GrammarEngine)?
+    private var translator: (any TranslationEngine)?
     private var engineError: String?
     private let gate: LanguageGate
     private let editGuard: EditGuard
     private let debounce: Duration
     private var cache = ResultCache<CachedOutcome>(capacity: 200)
     private var pendingTask: Task<Void, Never>?
+    private var translationCache = ResultCache<String>(capacity: 200)
+    private var translationTask: Task<Void, Never>?
 
     /// Số lần thực sự gọi engine (dùng cho test).
     public private(set) var engineCallCount = 0
@@ -52,19 +76,22 @@ public final class CheckCoordinator {
 
     public init(
         engine: (any GrammarEngine)? = nil,
+        translator: (any TranslationEngine)? = nil,
         gate: LanguageGate = .init(),
         editGuard: EditGuard = .init(),
         debounce: Duration = .milliseconds(700)
     ) {
         self.engine = engine
+        self.translator = translator
         self.gate = gate
         self.editGuard = editGuard
         self.debounce = debounce
         if engine == nil { state = .loadingModel }
     }
 
-    public func setEngine(_ engine: any GrammarEngine) {
+    public func setEngine(_ engine: any GrammarEngine, translator: (any TranslationEngine)? = nil) {
         self.engine = engine
+        self.translator = translator
         engineError = nil
         if state == .loadingModel {
             if sentence.isEmpty { state = .idle } else { submit(sentence, from: source, immediately: true) }
@@ -73,8 +100,10 @@ public final class CheckCoordinator {
 
     public func setEngineError(_ message: String) {
         engine = nil
+        translator = nil
         engineError = message
         state = .modelError(message)
+        cancelTranslation()
     }
 
     /// Nhận câu mới. Chờ `debounce` rồi mới kiểm tra, câu đến sau huỷ câu trước.
@@ -87,6 +116,7 @@ public final class CheckCoordinator {
         sentence = trimmed
         self.source = source
         pendingTask?.cancel()
+        cancelTranslation()
 
         let delay = immediately ? Duration.zero : debounce
         pendingTask = Task { [weak self] in
@@ -101,6 +131,7 @@ public final class CheckCoordinator {
     /// Đợi lượt kiểm tra hiện tại xong (dùng cho test).
     public func waitForPendingCheck() async {
         await pendingTask?.value
+        await translationTask?.value
     }
 
     private func run(_ text: String) async {
@@ -165,5 +196,56 @@ public final class CheckCoordinator {
         case .rewritten:
             state = .uncertain(text)
         }
+        startTranslation()
+    }
+
+    // MARK: - Dịch
+
+    /// Câu cần dịch ứng với trạng thái hiện tại: câu đã sửa khi có lỗi, câu gốc khi câu đúng.
+    private var translationTarget: String? {
+        switch state {
+        case let .ok(sentence): sentence
+        case let .corrected(diff): diff.corrected
+        default: nil
+        }
+    }
+
+    private func cancelTranslation() {
+        translationTask?.cancel()
+        translationTask = nil
+        translation = .hidden
+    }
+
+    /// Dịch câu ứng với trạng thái hiện tại, hoặc ẩn section nếu không có gì để dịch.
+    private func startTranslation() {
+        cancelTranslation()
+        guard isTranslationEnabled, let translator, let target = translationTarget else { return }
+
+        if let cached = translationCache.value(for: target) {
+            translation = .done(cached)
+            return
+        }
+
+        translation = .translating
+        let source = sentence
+        translationTask = Task { [weak self] in
+            do {
+                let result = try await translator.translate(target)
+                guard let self else { return }
+                self.translationCache.insert(result, for: target)
+                guard self.isCurrent(source: source, target: target) else { return }
+                self.translation = .done(result)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard let self, self.isCurrent(source: source, target: target) else { return }
+                self.translation = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Bản dịch vừa xong vẫn khớp với câu đang hiển thị (không bị huỷ, câu chưa đổi, Dịch vẫn bật).
+    private func isCurrent(source: String, target: String) -> Bool {
+        !Task.isCancelled && isTranslationEnabled && sentence == source && translationTarget == target
     }
 }

@@ -207,3 +207,41 @@ final class PanelHeaderTests: XCTestCase {
         XCTAssertEqual(PanelLayout.headerRect(in: tiny), tiny)
     }
 }
+
+@MainActor
+final class PanelSettingsTranslationTests: XCTestCase {
+    private var defaults: UserDefaults!
+    private let suite = "GrammarAppTests.PanelSettings.Translation"
+
+    override func setUp() async throws {
+        UserDefaults().removePersistentDomain(forName: suite)
+        defaults = UserDefaults(suiteName: suite)
+    }
+
+    override func tearDown() async throws {
+        UserDefaults().removePersistentDomain(forName: suite)
+    }
+
+    func testOffByDefault() {
+        XCTAssertFalse(PanelSettings(defaults: defaults).translationEnabled)
+    }
+
+    func testPersistsAcrossInstances() {
+        let s = PanelSettings(defaults: defaults)
+        s.translationEnabled = true
+        XCTAssertTrue(PanelSettings(defaults: defaults).translationEnabled)
+    }
+
+    func testInvalidStoredValueFallsBackToOff() {
+        defaults.set("yes please", forKey: PanelSettings.Key.translationEnabled)
+        XCTAssertFalse(PanelSettings(defaults: defaults).translationEnabled)
+    }
+
+    func testResetToDefaultsTurnsItOff() {
+        let s = PanelSettings(defaults: defaults)
+        s.translationEnabled = true
+        s.resetToDefaults()
+        XCTAssertFalse(s.translationEnabled)
+        XCTAssertFalse(PanelSettings(defaults: defaults).translationEnabled)
+    }
+}

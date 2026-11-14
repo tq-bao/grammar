@@ -4,6 +4,7 @@ App menu bar cho macOS, kiểm tra ngữ pháp tiếng Anh **offline**. App đ�
 
 - **Phần trên:** câu bạn đang gõ, gạch chân đỏ dưới cụm sai (khoảng trống được tô đỏ ở chỗ thiếu từ).
 - **Phần dưới:** câu đã sửa, phần sửa được tô xanh. Bấm **⌃⌥C** (hoặc menu bar › Copy câu đã sửa) để copy.
+- **Bản dịch** (tuỳ chọn, mặc định tắt): bản dịch tiếng Việt của câu đã sửa, hoặc của câu gốc khi câu đã đúng. Bật trong **Cài đặt › Dịch sang tiếng Việt**. Bản dịch hiện sau câu sửa một chút. Việc dịch dùng chính model sửa ngữ pháp, chạy trên máy, không cần mạng. Bật Dịch thì app dùng thêm khoảng 120 MB RAM.
 
 Panel **chỉ để xem**. Nền trong suốt theo cài đặt, và mặc định mọi click hay cuộn chuột trên panel đều đi xuyên xuống app phía sau. Độ mờ nền, góc màn hình và độ rộng chỉnh trong **Cài đặt**.
 
@@ -15,7 +16,7 @@ Vị trí đã kéo được lưu lại, kể cả sau khi khởi động lại 
 
 App chỉ sửa ngữ pháp, chính tả và dấu câu, giữ nguyên ý và giọng văn, và **không bao giờ ghi vào app bạn đang gõ**. Model ngôn ngữ (Qwen2.5-7B-Instruct, GGUF 4-bit) chạy trên máy qua llama.cpp. Nội dung bạn gõ không bị gửi ra ngoài và không bị lưu xuống đĩa.
 
-> **Bản Windows:** xem [windows/README.md](windows/README.md). Cùng chức năng, trừ phím tắt.
+> **Bản Windows:** xem [windows/README.md](windows/README.md). Cùng chức năng, trừ phím tắt và tính năng Dịch.
 
 ## Yêu cầu
 
@@ -76,7 +77,7 @@ App cần quyền **Accessibility** để đọc ô nhập liệu ở app khác 
 | Bôi đen một đoạn rồi bấm **⌃⌥G** | Kiểm tra đoạn đó. Dùng cho app không đọc được ô nhập. Clipboard được khôi phục như cũ |
 | **⌃⌥C** hoặc menu bar › Copy câu đã sửa | Copy câu đã sửa vào clipboard (chỉ khi panel đang báo có lỗi) |
 | Menu bar › Ẩn/Hiện panel, Tạm dừng/Tiếp tục, Thoát | |
-| Menu bar › **Cài đặt…** (⌘,) | Chỉnh độ mờ nền (0–100%), bật/tắt click xuyên qua (tắt để kéo panel), góc màn hình, độ rộng panel. Thay đổi áp dụng ngay và được lưu lại |
+| Menu bar › **Cài đặt…** (⌘,) | Chỉnh độ mờ nền (0–100%), bật/tắt click xuyên qua (tắt để kéo panel), góc màn hình, độ rộng panel, bật/tắt Dịch sang tiếng Việt. Thay đổi áp dụng ngay và được lưu lại |
 
 Trạng thái ở góc panel gồm: Đang chờ, Đang kiểm tra, Không có lỗi ngữ pháp, Có lỗi, Không phải tiếng Anh, Không chắc chắn (model muốn viết lại cả câu nên kết quả bị bỏ), Lỗi model.
 

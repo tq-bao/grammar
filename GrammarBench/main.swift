@@ -5,12 +5,16 @@ import GrammarKit
 //
 //   GrammarBench --golden GrammarAppTests/Fixtures/golden.json \
 //                --model GrammarApp/Resources/Models/Qwen2.5-3B-Instruct-Q4_K_M.gguf \
-//                [--model ...] [--verbose]
+//                [--model ...] [--verbose] [--translate]
+//
+// --translate: sau golden set, dịch các câu mẫu sang tiếng Việt (in từng bản dịch để đọc bằng mắt),
+// xen kẽ mỗi lần dịch với một lần sửa ngữ pháp, rồi in p50/p95 của bước dịch và p95 của bước sửa khi xen kẽ.
 
 struct Arguments {
     var golden = "GrammarAppTests/Fixtures/golden.json"
     var models: [String] = []
     var verbose = false
+    var translate = false
 
     init() {
         var args = CommandLine.arguments.dropFirst().makeIterator()
@@ -19,6 +23,7 @@ struct Arguments {
             case "--golden": golden = args.next() ?? golden
             case "--model": if let m = args.next() { models.append(m) }
             case "--verbose": verbose = true
+            case "--translate": translate = true
             default:
                 FileHandle.standardError.write(Data("Tham số không hợp lệ: \(arg)\n".utf8))
                 exit(64)
@@ -29,6 +34,33 @@ struct Arguments {
 
 func percent(_ x: Double) -> String { String(format: "%.0f%%", x * 100) }
 func ms(_ s: Double) -> String { String(format: "%.0f ms", s * 1000) }
+
+func percentile(_ values: [Double], _ p: Double) -> Double {
+    guard !values.isEmpty else { return 0 }
+    let sorted = values.sorted()
+    let index = Int((Double(sorted.count - 1) * p).rounded())
+    return sorted[index]
+}
+
+/// Câu mẫu cho bước dịch: câu thường, câu viết tắt kiểu chat, câu có tên riêng/thuật ngữ,
+/// câu hỏi và yêu cầu (phải được dịch, không được trả lời), và một câu dài khoảng 40 từ.
+let translationSamples = [
+    "She went to school yesterday.",
+    "I have finished the report.",
+    "He has two cats.",
+    "gonna send u the file tmr, it has the numbers",
+    "ok cool, will do it after lunch",
+    "Can you send me the file?",
+    "What time does the meeting start tomorrow?",
+    "Please review my pull request before Friday.",
+    "Write a poem about the sea.",
+    "The deployment to Kubernetes failed because the Docker image was missing.",
+    "Minh and Lan will join the call with the Singapore team at 3 PM.",
+    "There is a lot of information in the document.",
+    "I am good at math but I need more practice with statistics.",
+    "Thanks for your help, I really appreciate it.",
+    "We decided to postpone the product launch until next quarter because the testing team found several critical bugs in the payment flow, and we want to make sure every customer has a smooth experience before we announce it publicly.",
+]
 
 let args = Arguments()
 guard !args.models.isEmpty else {
@@ -82,6 +114,30 @@ for modelPath in args.models {
             let kind = expected == nil ? "đúng" : "sai "
             print("\(mark) [\(kind)] \(input)\n      -> \(output)\(verdict == .rewritten ? "  (EditGuard: viết lại)" : "")")
         }
+    }
+
+    if args.translate {
+        print("\n--- Dịch (xen kẽ với sửa ngữ pháp) ---")
+        var translateSeconds: [Double] = []
+        var correctSeconds: [Double] = []
+        for (index, sentence) in translationSamples.enumerated() {
+            var start = Date()
+            let translation: String
+            do {
+                translation = try await engine.translate(sentence)
+            } catch {
+                translation = "<lỗi: \(error.localizedDescription)>"
+            }
+            translateSeconds.append(Date().timeIntervalSince(start))
+            print("\(sentence)\n      -> \(translation)  (\(ms(translateSeconds.last!)))")
+
+            // Một lần sửa ngay sau lần dịch: kiểm tra prefix cache của bước sửa còn nguyên.
+            let input = cases[index % cases.count].0
+            start = Date()
+            _ = try? await engine.correct(input)
+            correctSeconds.append(Date().timeIntervalSince(start))
+        }
+        print("Dịch: p50 \(ms(percentile(translateSeconds, 0.5))) | p95 \(ms(percentile(translateSeconds, 0.95))) | Sửa khi xen kẽ: p50 \(ms(percentile(correctSeconds, 0.5))) | p95 \(ms(percentile(correctSeconds, 0.95)))")
     }
 
     print("Giữ nguyên câu đúng: \(percent(report.keepRate)) | Khớp đáp án: \(percent(report.matchRate)) | Bị EditGuard loại: \(percent(report.rewriteRate)) | p50 \(ms(report.p50)) | p95 \(ms(report.p95)) | nạp + warm-up \(String(format: "%.1f s", loadSeconds))")

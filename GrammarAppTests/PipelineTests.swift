@@ -242,3 +242,164 @@ final class CheckCoordinatorTests: XCTestCase {
         XCTAssertEqual(c.state, .modelError("Không tìm thấy model"))
     }
 }
+
+/// Bộ dịch giả: trả "VI: <câu>", có độ trễ và chế độ ném lỗi.
+/// Độ trễ bỏ qua việc huỷ để kiểm tra coordinator tự bỏ kết quả cũ.
+actor FakeTranslator: TranslationEngine {
+    struct Failure: LocalizedError {
+        var errorDescription: String? { "Model gặp lỗi khi dịch." }
+    }
+
+    let delay: Duration
+    let fails: Bool
+    private(set) var calls: [String] = []
+
+    init(delay: Duration = .zero, fails: Bool = false) {
+        self.delay = delay
+        self.fails = fails
+    }
+
+    func translate(_ sentence: String) async throws -> String {
+        calls.append(sentence)
+        if delay > .zero { try? await Task.sleep(for: delay) }
+        if fails { throw Failure() }
+        return "VI: \(sentence)"
+    }
+}
+
+@MainActor
+final class CheckCoordinatorTranslationTests: XCTestCase {
+    let wrong = "She go to school yesterday."
+    let fixed = "She went to school yesterday."
+
+    func makeCoordinator(
+        translator: FakeTranslator, enabled: Bool = true, answers: [String: String]? = nil
+    ) -> CheckCoordinator {
+        let engine = FakeEngine(answers: answers ?? [wrong: fixed])
+        let c = CheckCoordinator(engine: engine, translator: translator, debounce: .milliseconds(80))
+        c.isTranslationEnabled = enabled
+        return c
+    }
+
+    func testDisabledHidesSectionAndNeverTranslates() async {
+        let translator = FakeTranslator()
+        let c = makeCoordinator(translator: translator, enabled: false)
+        c.submit(wrong, from: .focusedField)
+        await c.waitForPendingCheck()
+        guard case .corrected = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(c.translation, .hidden)
+        let calls = await translator.calls
+        XCTAssertEqual(calls, [])
+    }
+
+    func testCorrectedTranslatesCorrectedSentence() async {
+        let translator = FakeTranslator()
+        let c = makeCoordinator(translator: translator)
+        c.submit(wrong, from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .done("VI: \(fixed)"))
+        let calls = await translator.calls
+        XCTAssertEqual(calls, [fixed])
+    }
+
+    func testOkTranslatesOriginalSentence() async {
+        let translator = FakeTranslator()
+        let c = makeCoordinator(translator: translator)
+        c.submit("I have finished the report.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .ok("I have finished the report."))
+        XCTAssertEqual(c.translation, .done("VI: I have finished the report."))
+    }
+
+    func testShowsTranslatingBeforeResult() async throws {
+        let translator = FakeTranslator(delay: .milliseconds(200))
+        let c = makeCoordinator(translator: translator)
+        c.submit(wrong, from: .focusedField)
+        try await Task.sleep(for: .milliseconds(150))
+        guard case .corrected = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(c.translation, .translating)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .done("VI: \(fixed)"))
+    }
+
+    func testNotEnglishAndUncertainHideSection() async {
+        let translator = FakeTranslator()
+        let rewrite = "gonna send u the file tmr, it have the numbers"
+        let c = makeCoordinator(translator: translator, answers: [
+            rewrite: "I will send you the document tomorrow; it contains the figures.",
+        ])
+        c.submit("Hôm nay tôi đi học muộn.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .hidden)
+
+        c.submit(rewrite, from: .manual)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .uncertain(rewrite))
+        XCTAssertEqual(c.translation, .hidden)
+
+        let calls = await translator.calls
+        XCTAssertEqual(calls, [])
+    }
+
+    func testStaleTranslationIsNeverShown() async throws {
+        let translator = FakeTranslator(delay: .milliseconds(150))
+        let c = makeCoordinator(translator: translator)
+        c.submit(wrong, from: .focusedField)
+        try await Task.sleep(for: .milliseconds(120))  // đang dịch câu 1
+        XCTAssertEqual(c.translation, .translating)
+        c.submit("We are ready now.", from: .focusedField)
+        XCTAssertEqual(c.translation, .hidden)
+        try await Task.sleep(for: .milliseconds(160))  // bản dịch câu 1 đã xong, câu 2 đang dịch
+        XCTAssertNotEqual(c.translation, .done("VI: \(fixed)"))
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .done("VI: We are ready now."))
+    }
+
+    func testCachedTranslationIsReused() async {
+        let translator = FakeTranslator()
+        let c = makeCoordinator(translator: translator)
+        c.submit("I have finished the report.", from: .focusedField)
+        await c.waitForPendingCheck()
+        c.submit("We are ready now.", from: .focusedField)
+        await c.waitForPendingCheck()
+        c.submit("I have finished the report.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .done("VI: I have finished the report."))
+        let calls = await translator.calls
+        XCTAssertEqual(calls, ["I have finished the report.", "We are ready now."])
+    }
+
+    func testEnablingTranslatesCurrentResult() async {
+        let translator = FakeTranslator()
+        let c = makeCoordinator(translator: translator, enabled: false)
+        c.submit(wrong, from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .hidden)
+        c.isTranslationEnabled = true
+        XCTAssertEqual(c.translation, .translating)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .done("VI: \(fixed)"))
+    }
+
+    func testDisablingWhileTranslatingHidesSection() async throws {
+        let translator = FakeTranslator(delay: .milliseconds(150))
+        let c = makeCoordinator(translator: translator)
+        c.submit(wrong, from: .focusedField)
+        try await Task.sleep(for: .milliseconds(120))
+        XCTAssertEqual(c.translation, .translating)
+        c.isTranslationEnabled = false
+        XCTAssertEqual(c.translation, .hidden)
+        try await Task.sleep(for: .milliseconds(100))
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.translation, .hidden)
+    }
+
+    func testTranslationErrorKeepsCorrection() async {
+        let c = makeCoordinator(translator: FakeTranslator(fails: true))
+        c.submit(wrong, from: .focusedField)
+        await c.waitForPendingCheck()
+        guard case let .corrected(diff) = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(diff.corrected, fixed)
+        XCTAssertEqual(c.translation, .failed("Model gặp lỗi khi dịch."))
+    }
+}

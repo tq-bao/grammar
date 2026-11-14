@@ -35,6 +35,7 @@ final class AppModel {
 
         showPanel()
         observeLayoutSettings()
+        observeTranslationSetting()
         loadEngine()
 
         if isTrusted {
@@ -53,7 +54,7 @@ final class AppModel {
                 let url = try ModelLocator.locate()
                 let engine = try LlamaGrammarEngine(modelURL: url)
                 await engine.warmUp()
-                await MainActor.run { coordinator.setEngine(engine) }
+                await MainActor.run { coordinator.setEngine(engine, translator: engine) }
             } catch {
                 let message = error.localizedDescription
                 await MainActor.run { coordinator.setEngineError(message) }
@@ -118,6 +119,19 @@ final class AppModel {
                 self?.panel?.applyInteractionMode()
                 self?.panel?.scheduleRelayout()
                 self?.observeLayoutSettings()
+            }
+        }
+    }
+
+    /// Đồng bộ công tắc Dịch trong Cài đặt vào coordinator, và đặt lại khung panel
+    /// vì section "Bản dịch" hiện/ẩn làm panel đổi chiều cao.
+    private func observeTranslationSetting() {
+        coordinator.isTranslationEnabled = withObservationTracking {
+            settings.translationEnabled
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                self?.observeTranslationSetting()
+                self?.panel?.scheduleRelayout()
             }
         }
     }

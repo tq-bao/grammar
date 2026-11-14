@@ -50,6 +50,39 @@ xcodebuild -project GrammarApp.xcodeproj -scheme GrammarBench -configuration Rel
 
 Không có kết quả nào bị EditGuard loại, tức là model không viết lại câu trong bộ test này.
 
+## Dịch sang tiếng Việt (change `add-vietnamese-translation`)
+
+Đo ngày 2026-11-14 trên cùng máy Apple M4 Pro, model Qwen2.5-7B-Instruct-Q4_K_M. Bộ câu mẫu (`translationSamples` trong `GrammarBench/main.swift`) gồm 15 câu: câu thường, câu viết tắt kiểu chat, câu có tên riêng/thuật ngữ, câu hỏi, câu yêu cầu, và một câu dài khoảng 40 từ. Mỗi lần dịch được xen kẽ với một lần sửa ngữ pháp, để kiểm tra rằng context dịch riêng không làm mất KV cache của prompt sửa.
+
+```bash
+./build/Build/Products/Release/GrammarBench \
+  --model GrammarApp/Resources/Models/Qwen2.5-7B-Instruct-Q4_K_M.gguf --translate
+```
+
+| | p50 | p95 |
+|---|---|---|
+| Dịch | 353 ms | 1393 ms |
+| Sửa ngữ pháp ngay sau mỗi lần dịch | 282 ms | 307 ms |
+
+- p95 của bước dịch đến từ hai lần chạy:
+  - **Lần dịch đầu tiên** (1.4 s), gồm tạo context dịch, quét vocab để cấm token CJK, và prefill prompt cố định. Từ lần thứ hai, prompt cố định đã nằm trong KV cache.
+  - **Câu dài khoảng 40 từ** (1.6 s).
+- Bước sửa không chậm đi khi xen kẽ với dịch. Golden set vẫn cho 100% / 88%, giống trước khi có tính năng Dịch.
+
+### Chất lượng
+
+Ban đầu, 1/15 câu bị lẫn tiếng Trung: "Tôi giỏi môn toán nhưng cần练习一下翻译技能…". Thêm quy tắc vào prompt không sửa được. Sau khi cấm các token chứa ký tự Trung/Nhật/Hàn trong sampler dịch (design §5b), câu này dịch đúng, và không còn bản dịch nào có ký tự CJK.
+
+Lỗi còn lại (3/15). Vì vậy section trên panel có tiêu đề "Bản dịch (tham khảo)":
+
+| Câu gốc | Bản dịch | Lỗi |
+|---|---|---|
+| What time does the meeting start tomorrow? | Cuộc họp bắt đầu lúc mấy giờTomorrow? | Dính chữ tiếng Anh, thiếu "ngày mai" |
+| Please review my pull request before Friday. | Vui lòng review pull request của tôi trước khi thứ Năm. | Sai thứ (Friday là thứ Sáu) |
+| There is a lot of information in the document. | Đocument chứa nhiều thông tin. | Méo chữ "tài liệu" |
+
+Các câu hỏi và yêu cầu ("Can you send me the file?", "Write a poem about the sea.") đều được dịch, không bị trả lời hay làm theo.
+
 ## Bản Windows (LLamaSharp)
 
 Bản Windows (`windows/`) chạy llama.cpp qua LLamaSharp 0.30.0, không dùng tag `b12376` như bản macOS. Golden set và prompt dùng chung với bản macOS, nên mục này kiểm tra việc đổi runtime có làm đổi kết quả hay không.
