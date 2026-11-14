@@ -74,7 +74,8 @@ App cần quyền **Accessibility** để đọc ô nhập liệu ở app khác 
 | Thao tác | Kết quả |
 |---|---|
 | Gõ tiếng Anh ở app bất kỳ rồi dừng khoảng 0.7 giây | Panel kiểm tra câu đang chứa con trỏ |
-| Bôi đen một đoạn rồi bấm **⌃⌥G** | Kiểm tra đoạn đó. Dùng cho app không đọc được ô nhập. Clipboard được khôi phục như cũ |
+| Bôi đen một từ hoặc một đoạn trong ô đang gõ | Panel tự kiểm tra đúng đoạn bôi đen, kể cả khi chỉ có 1 từ. Bỏ bôi đen thì quay về câu chứa con trỏ. Vùng chọn dài hơn 1000 ký tự (ví dụ ⌘A) thì vẫn kiểm tra câu chứa con trỏ |
+| Bôi đen một đoạn rồi bấm **⌃⌥G** | Kiểm tra đoạn đó, kể cả khi chỉ có 1 từ. Dùng cho app không đọc được ô nhập. Clipboard được khôi phục như cũ |
 | **⌃⌥C** hoặc menu bar › Copy câu đã sửa | Copy câu đã sửa vào clipboard (chỉ khi panel đang báo có lỗi) |
 | Menu bar › Ẩn/Hiện panel, Tạm dừng/Tiếp tục, Thoát | |
 | Menu bar › **Cài đặt…** (⌘,) | Chỉnh độ mờ nền (0–100%), bật/tắt click xuyên qua (tắt để kéo panel), góc màn hình, độ rộng panel, bật/tắt Dịch sang tiếng Việt. Thay đổi áp dụng ngay và được lưu lại |
@@ -83,7 +84,7 @@ Trạng thái ở góc panel gồm: Đang chờ, Đang kiểm tra, Không có l�
 
 ## Giới hạn đã biết
 
-- Chỉ kiểm tra **một câu** (câu chứa con trỏ), không kiểm tra cả đoạn. Câu dưới 3 từ và câu không phải tiếng Anh bị bỏ qua.
+- Khi không bôi đen, chỉ kiểm tra **một câu** (câu chứa con trỏ), không kiểm tra cả đoạn. Câu dưới 3 từ và câu không phải tiếng Anh bị bỏ qua. Muốn kiểm tra một từ hay nhiều câu thì bôi đen đoạn đó.
 - Ô mật khẩu không bao giờ được đọc.
 - Chrome và các app Electron (Slack, Teams) được bật cây accessibility tự động, nhưng mỗi app hỗ trợ một khác. Xem [docs/app-compatibility.md](docs/app-compatibility.md). App nào không đọc được thì dùng ⌃⌥G.
 - Model vẫn có thể bỏ sót lỗi hoặc sửa hơi quá tay, ví dụ đổi "u" thành "you". Xem số liệu ở [docs/model-benchmark.md](docs/model-benchmark.md).

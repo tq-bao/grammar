@@ -144,4 +144,22 @@ final class EditGuardTests: XCTestCase {
             corrected: "I went home and I was tired. I slept early.")
         XCTAssertEqual(guardian.evaluate(diff), .rewritten)
     }
+
+    // MARK: - Đoạn bôi đen
+
+    func testRelaxedAcceptsSingleWordSpellingFix() {
+        let diff = WordDiff(original: "recieve", corrected: "receive")
+        XCTAssertEqual(guardian.evaluate(diff, relaxed: true), .accepted)
+        XCTAssertEqual(guardian.evaluate(diff), .rewritten)
+    }
+
+    func testRelaxedStillRejectsDifferentWord() {
+        XCTAssertEqual(guardian.evaluate(WordDiff(original: "go", corrected: "went"), relaxed: true), .rewritten)
+    }
+
+    func testRelaxedKeepsTotalRatioFromThreeWords() {
+        XCTAssertEqual(
+            guardian.evaluate(WordDiff(original: "Me want eat many food", corrected: "Mo wants eats more foods"), relaxed: true),
+            .rewritten)
+    }
 }

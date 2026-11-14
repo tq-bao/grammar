@@ -20,10 +20,17 @@ public struct EditGuard: Sendable {
         self.maxTotalChangeRatio = maxTotalChangeRatio
     }
 
-    public func evaluate(_ diff: WordDiff) -> Verdict {
+    /// Đoạn gốc ít hơn số từ này được miễn ngưỡng `maxTotalChangeRatio` khi `relaxed`.
+    /// Với một hai từ, sửa chính tả một từ đã là 50–100% số từ.
+    public static let shortInputWordLimit = 3
+
+    /// - Parameter relaxed: dùng cho đoạn người dùng bôi đen. Đoạn dưới `shortInputWordLimit` từ
+    ///   không bị chặn theo tổng số từ thay đổi; vẫn chặn từ bị thay bằng từ khác hẳn và tách câu.
+    public func evaluate(_ diff: WordDiff, relaxed: Bool = false) -> Verdict {
         if diff.isIdentical { return .unchanged }
         if diff.dissimilarChangeRatio > maxChangeRatio { return .rewritten }
-        if diff.changeRatio > maxTotalChangeRatio { return .rewritten }
+        let isShortSelection = relaxed && LanguageGate.wordCount(diff.original) < Self.shortInputWordLimit
+        if !isShortSelection, diff.changeRatio > maxTotalChangeRatio { return .rewritten }
         // Mô hình tách thành nhiều câu hơn câu gốc -> đang diễn đạt lại.
         if Self.sentenceCount(diff.corrected) > max(1, Self.sentenceCount(diff.original)) {
             return .rewritten

@@ -77,6 +77,24 @@ final class LanguageGateTests: XCTestCase {
     func testMixedMostlyVietnamese() {
         XCTAssertEqual(gate.evaluate("Anh gửi em cái file report nhé, cảm ơn anh nhiều."), .notEnglish)
     }
+
+    // MARK: - Đoạn bôi đen
+
+    func testRelaxedAcceptsSingleWord() {
+        XCTAssertEqual(gate.evaluate("recieve", relaxed: true), .english)
+        XCTAssertEqual(gate.evaluate("ok thanks", relaxed: true), .english)
+        XCTAssertEqual(gate.evaluate("recieve"), .tooShort)
+    }
+
+    func testRelaxedStillDetectsLanguageFromThreeWords() {
+        XCTAssertEqual(gate.evaluate("Hôm nay tôi đi học muộn.", relaxed: true), .notEnglish)
+        XCTAssertEqual(gate.evaluate("She go to school yesterday.", relaxed: true), .english)
+    }
+
+    func testRelaxedRejectsNoWords() {
+        XCTAssertEqual(gate.evaluate("   ", relaxed: true), .tooShort)
+        XCTAssertEqual(gate.evaluate("👍 !!", relaxed: true), .tooShort)
+    }
 }
 
 final class ResultCacheTests: XCTestCase {
@@ -231,6 +249,48 @@ final class CheckCoordinatorTests: XCTestCase {
         c.submit("I have finished the report.", from: .manual)
         await c.waitForPendingCheck()
         XCTAssertEqual(c.state, .ok("I have finished the report."))
+    }
+
+    // MARK: - Đoạn bôi đen
+
+    func testSelectionChecksSingleWord() async {
+        let engine = FakeEngine(answers: ["recieve": "receive"])
+        let c = makeCoordinator(engine)
+        c.submit("recieve", from: .selection)
+        await c.waitForPendingCheck()
+        guard case let .corrected(diff) = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(diff.corrected, "receive")
+        XCTAssertEqual(c.source, .selection)
+    }
+
+    func testFocusedFieldSingleWordIsNotChecked() async {
+        let engine = FakeEngine(answers: ["recieve": "receive"])
+        let c = makeCoordinator(engine)
+        c.submit("recieve", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .idle)
+        let calls = await engine.calls
+        XCTAssertEqual(calls, [])
+    }
+
+    func testSelectionHotkeyChecksSingleWord() async {
+        let c = makeCoordinator(FakeEngine(answers: ["recieve": "receive"]))
+        c.submit("recieve", from: .selectionHotkey, immediately: true)
+        await c.waitForPendingCheck()
+        guard case let .corrected(diff) = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(diff.corrected, "receive")
+    }
+
+    func testPausedIgnoresSelection() async {
+        let engine = FakeEngine(answers: ["recieve": "receive"])
+        let c = makeCoordinator(engine)
+        c.isPaused = true
+        c.submit("recieve", from: .selection)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .idle)
+        XCTAssertEqual(c.sentence, "")
+        let calls = await engine.calls
+        XCTAssertEqual(calls, [])
     }
 
     func testEngineErrorIsShown() async {

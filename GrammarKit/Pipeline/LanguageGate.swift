@@ -22,14 +22,26 @@ public struct LanguageGate: Sendable {
         self.minimumConfidence = minimumConfidence
     }
 
-    public func evaluate(_ sentence: String) -> Verdict {
-        let words = WordTokenizer.tokenize(sentence).filter { $0.text.contains(where: \.isLetter) }
-        guard words.count >= minimumWords else { return .tooShort }
+    /// - Parameter relaxed: dùng cho đoạn người dùng bôi đen. Chỉ cần 1 từ; dưới `minimumWords` từ thì
+    ///   coi là tiếng Anh luôn, vì bộ nhận diện không đáng tin với một hai từ.
+    public func evaluate(_ sentence: String, relaxed: Bool = false) -> Verdict {
+        let count = Self.wordCount(sentence)
+        if relaxed {
+            guard count >= 1 else { return .tooShort }
+            if count < minimumWords { return .english }
+        } else {
+            guard count >= minimumWords else { return .tooShort }
+        }
 
         let recognizer = NLLanguageRecognizer()
         recognizer.languageHints = Self.languageHints
         recognizer.processString(sentence)
         let confidence = recognizer.languageHypotheses(withMaximum: 3)[.english] ?? 0
         return confidence >= minimumConfidence ? .english : .notEnglish
+    }
+
+    /// Số từ (token có chữ cái) trong câu.
+    public static func wordCount(_ sentence: String) -> Int {
+        WordTokenizer.tokenize(sentence).filter { $0.text.contains(where: \.isLetter) }.count
     }
 }

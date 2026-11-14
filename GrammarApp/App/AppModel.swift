@@ -19,9 +19,12 @@ final class AppModel {
     @ObservationIgnored private var permissionTimer: Timer?
 
     func start() {
-        capture.onChange = { [weak self] text, cursor in
-            guard let self, let sentence = SentenceExtractor.sentence(in: text, cursorUTF16Offset: cursor) else { return }
-            self.coordinator.submit(sentence, from: .focusedField)
+        capture.onChange = { [weak self] text, cursor, selection in
+            // Đang bôi đen thì kiểm tra đúng đoạn bôi đen, không thì câu chứa con trỏ.
+            guard let self,
+                  let target = CheckTarget.resolve(text: text, cursorUTF16Offset: cursor, selection: selection)
+            else { return }
+            self.coordinator.submit(target.text, from: target.source)
         }
         hotkeys.register(.checkSelection) { [weak self] in
             Task { @MainActor in

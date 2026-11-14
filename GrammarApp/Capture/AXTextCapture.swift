@@ -10,15 +10,16 @@ import GrammarKit
 /// - Bỏ qua ô mật khẩu và chính app này.
 @MainActor
 final class AXTextCapture {
-    /// Gọi khi nội dung hoặc vị trí con trỏ của ô đang focus thay đổi.
-    var onChange: ((_ text: String, _ cursorUTF16Offset: Int?) -> Void)?
+    /// Gọi khi nội dung, vị trí con trỏ hoặc vùng chọn của ô đang focus thay đổi.
+    /// `selection` là đoạn đang bôi đen, `nil` khi không bôi đen (hoặc chỉ bôi khoảng trắng).
+    var onChange: ((_ text: String, _ cursorUTF16Offset: Int?, _ selection: String?) -> Void)?
 
     private var observer: AXObserver?
     private var appElement: AXUIElement?
     private var focusedElement: AXUIElement?
     private var currentPID: pid_t?
     private var currentApp: NSRunningApplication?
-    private var lastEmitted: (text: String, cursor: Int?)?
+    private var lastEmitted: (text: String, cursor: Int?, selection: String?)?
     /// Ô đang focus có hỗ trợ text marker không (Chrome, Safari, Electron). `nil` = chưa kiểm tra.
     private var supportsTextMarkers: Bool?
     private var lastNotification = Date.distantPast
@@ -165,21 +166,50 @@ final class AXTextCapture {
 
         let text: String
         let cursor: Int?
+        let rawSelection: String?
         if let paragraph = paragraphAtCaret(of: element) {
-            // Trình soạn thảo web: đọc đúng đoạn chứa con trỏ qua text marker.
-            (text, cursor) = paragraph
+            // Trình soạn thảo web: đọc đúng đoạn chứa con trỏ và vùng chọn qua text marker.
+            (text, cursor, rawSelection) = paragraph
         } else {
             // App gốc: AXValue + AXSelectedTextRange khớp nhau.
             var value: CFTypeRef?
             guard AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value) == .success,
                   let fullText = value as? String else { return }
             text = fullText
-            cursor = Self.cursorOffset(of: element)
+            let range = Self.selectedRange(of: element)
+            cursor = range?.location
+            rawSelection = Self.selectedText(of: element, value: fullText, range: range)
         }
+        let selection = Self.meaningful(rawSelection)
 
-        if let lastEmitted, lastEmitted.text == text, lastEmitted.cursor == cursor { return }
-        lastEmitted = (text, cursor)
-        onChange?(text, cursor)
+        if let lastEmitted, lastEmitted.text == text, lastEmitted.cursor == cursor,
+           lastEmitted.selection == selection { return }
+        lastEmitted = (text, cursor, selection)
+        onChange?(text, cursor, selection)
+    }
+
+    /// Bỏ ký tự phần tử nhúng; vùng chọn chỉ có khoảng trắng coi như không bôi đen.
+    private static func meaningful(_ selection: String?) -> String? {
+        guard let selection else { return nil }
+        let cleaned = selection.filter { $0 != "\u{FFFC}" }
+        return cleaned.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : cleaned
+    }
+
+    /// Đoạn bôi đen ở app gốc: `AXSelectedText`, nếu không có thì cắt `AXValue` theo `AXSelectedTextRange`.
+    private static func selectedText(of element: AXUIElement, value: String, range: CFRange?) -> String? {
+        guard let range, range.length > 0 else { return nil }
+        var selected: CFTypeRef?
+        if AXUIElementCopyAttributeValue(element, kAXSelectedTextAttribute as CFString, &selected) == .success,
+           let selected = selected as? String {
+            return selected
+        }
+        let utf16 = value.utf16
+        let start = min(max(range.location, 0), utf16.count)
+        let end = min(start + range.length, utf16.count)
+        guard start < end else { return nil }
+        let lower = utf16.index(utf16.startIndex, offsetBy: start)
+        let upper = utf16.index(utf16.startIndex, offsetBy: end)
+        return String(utf16[lower..<upper])
     }
 
     private static func isSecure(_ element: AXUIElement) -> Bool {
@@ -196,12 +226,12 @@ final class AXTextCapture {
         return false
     }
 
-    /// Đoạn văn chứa con trỏ và vị trí con trỏ trong đoạn, đọc qua text marker.
+    /// Đoạn văn chứa con trỏ, vị trí con trỏ trong đoạn, và đoạn đang bôi đen (nếu có), đọc qua text marker.
     ///
     /// Trong trình soạn thảo web có định dạng (ví dụ Confluence trên Chrome), `AXSelectedTextRange`
     /// bị lệch so với `AXValue` (lệch dồn theo code inline, phần tử lồng nhau…), còn text marker thì chính xác.
     /// Trả về `nil` nếu ô không hỗ trợ text marker, để dùng cách đọc cũ.
-    private func paragraphAtCaret(of element: AXUIElement) -> (text: String, cursor: Int)? {
+    private func paragraphAtCaret(of element: AXUIElement) -> (text: String, cursor: Int, selection: String?)? {
         if supportsTextMarkers == nil {
             var names: CFArray?
             let ok = AXUIElementCopyParameterizedAttributeNames(element, &names) == .success
@@ -212,7 +242,12 @@ final class AXTextCapture {
         var selection: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, "AXSelectedTextMarkerRange" as CFString, &selection) == .success,
               let selection, CFGetTypeID(selection) == AXTextMarkerRangeGetTypeID() else { return nil }
-        let caret = AXTextMarkerRangeCopyStartMarker(selection as! AXTextMarkerRange)
+        let selectionRange = selection as! AXTextMarkerRange
+        let caret = AXTextMarkerRangeCopyStartMarker(selectionRange)
+        // Vùng chọn có thể vượt ra ngoài đoạn chứa con trỏ, nên đọc thẳng chuỗi của cả vùng chọn.
+        let selectedText = CFEqual(caret, AXTextMarkerRangeCopyEndMarker(selectionRange))
+            ? nil
+            : Self.string(for: selectionRange, in: element)
 
         var paragraphRef: CFTypeRef?
         guard AXUIElementCopyParameterizedAttributeValue(
@@ -223,7 +258,8 @@ final class AXTextCapture {
 
         let prefixRange = AXTextMarkerRangeCreate(nil, AXTextMarkerRangeCopyStartMarker(paragraphRange), caret)
         let prefix = Self.string(for: prefixRange, in: element) ?? ""
-        return CaretContext.normalize(paragraph: paragraph, prefix: prefix)
+        let (text, cursor) = CaretContext.normalize(paragraph: paragraph, prefix: prefix)
+        return (text, cursor, selectedText)
     }
 
     private static let paragraphForMarker = "AXParagraphTextMarkerRangeForTextMarker"
@@ -235,13 +271,14 @@ final class AXTextCapture {
         return value as? String
     }
 
-    private static func cursorOffset(of element: AXUIElement) -> Int? {
+    /// `AXSelectedTextRange`: `location` là vị trí con trỏ (đầu vùng chọn), `length` là độ dài vùng chọn.
+    private static func selectedRange(of element: AXUIElement) -> CFRange? {
         var value: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, &value) == .success,
               let value, CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
         var range = CFRange()
         guard AXValueGetValue(value as! AXValue, .cfRange, &range) else { return nil }
-        return range.location
+        return range
     }
 }
 

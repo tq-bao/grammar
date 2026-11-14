@@ -135,6 +135,8 @@ windows/
 
 Logic có hai bản: Swift (`GrammarKit/`) và C# (`windows/src/Grammar.Core/`). **Sửa prompt, EditGuard, normalizer, diff hay bộ lọc ngôn ngữ thì phải sửa cả hai bản và chạy cả hai bộ test.** Các test sau giúp phát hiện lệch:
 
+> **Chưa port:** bản Swift có thêm tham số `relaxed` trong `LanguageGate.evaluate` và `EditGuard.evaluate`, dùng cho đoạn bôi đen: cho phép đoạn 1–2 từ, bỏ nhận diện ngôn ngữ dưới 3 từ, bỏ ngưỡng tổng 80% dưới 3 từ. Bản macOS còn tự kiểm tra đoạn đang bôi đen (`CheckTarget`). Bản C# chưa có cả hai (change OpenSpec `prioritize-selection-check`). Khi `relaxed = false` thì hai bản vẫn khớp, nên các parity test bên dưới không bị ảnh hưởng.
+
 - `GrammarPromptParityTests` đọc `GrammarKit/Engine/GrammarPrompt.swift` và so từng chuỗi prompt với bản C#.
 - `MyersParityTests` so thuật toán diff với `difference(from:)` thật của Swift (`Fixtures/myers-swift.json`, sinh bằng `scripts/gen-myers-fixture.swift`).
 - `SentenceSegmenterParityTests` so cách tách câu với `NLTokenizer` của macOS (`Fixtures/sentences-nltokenizer.json`, sinh bằng `scripts/gen-sentence-fixture.swift`).

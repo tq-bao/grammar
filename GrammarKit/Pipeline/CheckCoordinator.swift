@@ -27,9 +27,18 @@ public enum TranslationState: Equatable, Sendable {
 
 /// Nguồn của câu đang kiểm tra.
 public enum TextSource: Equatable, Sendable {
+    /// Câu chứa con trỏ trong ô đang focus.
     case focusedField
+    /// Đoạn đang bôi đen trong ô đang focus (lấy tự động, không cần phím tắt).
+    case selection
     case selectionHotkey
     case manual
+
+    /// Đến từ cơ chế theo dõi ô đang focus: bị bỏ qua khi tạm dừng.
+    var isTracked: Bool { self == .focusedField || self == .selection }
+
+    /// Đoạn người dùng bôi đen: được kiểm tra cả khi ngắn (xem `LanguageGate`/`EditGuard` với `relaxed`).
+    var isSelection: Bool { self == .selection || self == .selectionHotkey }
 }
 
 /// Điều phối: debounce, lọc ngôn ngữ, cache, gọi engine, EditGuard.
@@ -108,7 +117,7 @@ public final class CheckCoordinator {
 
     /// Nhận câu mới. Chờ `debounce` rồi mới kiểm tra, câu đến sau huỷ câu trước.
     public func submit(_ newSentence: String, from source: TextSource, immediately: Bool = false) {
-        if isPaused && source == .focusedField { return }
+        if isPaused && source.isTracked { return }
 
         let trimmed = newSentence.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed == sentence, !immediately, state != .idle, state != .loadingModel { return }
@@ -124,7 +133,7 @@ public final class CheckCoordinator {
                 try? await Task.sleep(for: delay)
             }
             guard !Task.isCancelled else { return }
-            await self?.run(trimmed)
+            await self?.run(trimmed, relaxed: source.isSelection)
         }
     }
 
@@ -134,7 +143,7 @@ public final class CheckCoordinator {
         await translationTask?.value
     }
 
-    private func run(_ text: String) async {
+    private func run(_ text: String, relaxed: Bool) async {
         guard text == sentence else { return }
 
         if text.isEmpty {
@@ -142,7 +151,7 @@ public final class CheckCoordinator {
             return
         }
 
-        switch gate.evaluate(text) {
+        switch gate.evaluate(text, relaxed: relaxed) {
         case .tooShort:
             state = .idle
             return
@@ -172,7 +181,7 @@ public final class CheckCoordinator {
             guard !Task.isCancelled, text == sentence else { return }
 
             let diff = WordDiff(original: text, corrected: corrected)
-            let outcome: CachedOutcome = switch editGuard.evaluate(diff) {
+            let outcome: CachedOutcome = switch editGuard.evaluate(diff, relaxed: relaxed) {
             case .unchanged: .unchanged
             case .accepted: .corrected(corrected)
             case .rewritten: .rewritten
