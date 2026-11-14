@@ -17,6 +17,7 @@ final class AXTextCapture {
     private var appElement: AXUIElement?
     private var focusedElement: AXUIElement?
     private var currentPID: pid_t?
+    private var currentApp: NSRunningApplication?
     private var lastEmitted: (text: String, cursor: Int?)?
     /// Ô đang focus có hỗ trợ text marker không (Chrome, Safari, Electron). `nil` = chưa kiểm tra.
     private var supportsTextMarkers: Bool?
@@ -69,6 +70,7 @@ final class AXTextCapture {
         AXUIElementSetMessagingTimeout(element, 0.25)
         appElement = element
         currentPID = pid
+        currentApp = app
 
         var newObserver: AXObserver?
         guard AXObserverCreate(pid, axCallback, &newObserver) == .success, let newObserver else { return }
@@ -91,6 +93,7 @@ final class AXTextCapture {
         appElement = nil
         focusedElement = nil
         currentPID = nil
+        currentApp = nil
     }
 
     private var refcon: UnsafeMutableRawPointer {
@@ -137,6 +140,11 @@ final class AXTextCapture {
     /// Ô không gửi notification thì hỏi lại định kỳ. Có cả trường hợp focus đổi mà app không báo.
     private func pollIfNeeded() {
         guard isRunning, Date().timeIntervalSince(lastNotification) > 1.0 else { return }
+        // Chưa thấy ô nào: app WebView2 (Teams) có thể vừa khởi động tiến trình web sau lần attach,
+        // nên thử bật lại cờ accessibility cho các helper mới.
+        if focusedElement == nil, let currentApp {
+            ChromiumAccessibility.enableIfNeeded(for: currentApp)
+        }
         if let appElement {
             var value: CFTypeRef?
             if AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &value) == .success,
