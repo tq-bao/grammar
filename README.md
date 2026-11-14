@@ -15,6 +15,8 @@ Vị trí đã kéo được lưu lại, kể cả sau khi khởi động lại 
 
 App chỉ sửa ngữ pháp, chính tả và dấu câu, giữ nguyên ý và giọng văn, và **không bao giờ ghi vào app bạn đang gõ**. Model ngôn ngữ (Qwen2.5-7B-Instruct, GGUF 4-bit) chạy trên máy qua llama.cpp. Nội dung bạn gõ không bị gửi ra ngoài và không bị lưu xuống đĩa.
 
+> **Bản Windows:** xem [windows/README.md](windows/README.md). Cùng chức năng, trừ phím tắt.
+
 ## Yêu cầu
 
 - Mac Apple Silicon, macOS 26 trở lên, nên có từ 16 GB RAM (model 7B chiếm khoảng 5 GB khi chạy).
@@ -106,7 +108,10 @@ GrammarApp/     app: App (AppModel, menu bar, quyền), Capture (Accessibility, 
 GrammarAppTests/  unit test + Fixtures/golden.json
 GrammarBench/   tool benchmark model
 scripts/        fetch-llama.sh, download-model.sh
+windows/        bản Windows (C#, .NET 10, WPF), xem windows/README.md
 ```
+
+**Bản Windows dùng chung logic dưới dạng bản port C#** (`windows/src/Grammar.Core/`). Sửa prompt, EditGuard, normalizer, diff hay bộ lọc ngôn ngữ ở `GrammarKit/` thì phải sửa cả bản C#, rồi chạy `dotnet test windows/Grammar.sln`. Golden set `GrammarAppTests/Fixtures/golden.json` dùng chung cho cả hai bản. Xem mục "Giữ hai bản khớp nhau" trong [windows/README.md](windows/README.md).
 
 **Chẩn đoán khi app không đọc đúng câu đang gõ** (ví dụ trình soạn thảo web): chạy `swift scripts/ax-probe.swift <bundle-id>` (ví dụ `com.google.Chrome`), chuyển sang app đó và đặt con trỏ vào ô đang gõ. Script đọc 3 giây sau khi app đó được đưa lên trước. Script chỉ đọc, và in ra những gì app trả về qua Accessibility: vị trí con trỏ theo `AXSelectedTextRange` và đoạn văn đọc qua text marker. Với ô hỗ trợ text marker (Chrome, Safari, Electron), Grammar đọc đoạn văn chứa con trỏ qua text marker, vì `AXSelectedTextRange` có thể bị lệch so với `AXValue` trong trình soạn thảo có định dạng.
 

@@ -1,0 +1,822 @@
+[
+  {
+    "englishProbability" : 0.998,
+    "sentence" : "She go to school yesterday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "He have two cats and they is cute.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.63200000000000001,
+    "sentence" : "Hi, my name is Bao",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.98299999999999998,
+    "sentence" : "ok I will ping Tuan",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.89800000000000002,
+    "sentence" : "my name is Bao",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.96799999999999997,
+    "sentence" : "Hi Minh, can you check the PR?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.996,
+    "sentence" : "gonna send u the file tmr, it have the numbers",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "can you review my merge request when you have time",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I think the build is broken on main",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "let me check with Huong and get back to you",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "the deploy failed again because of the env vars",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.998,
+    "sentence" : "pls update the ticket before standup",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.997,
+    "sentence" : "Thanh will join the meeting at 3pm",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "we need to fix this bug before the release",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "sorry I was late, the traffic was terrible",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.997,
+    "sentence" : "Did you see the message from Linh?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I have pushed the fix to the feature branch",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.996,
+    "sentence" : "can u share the link to the dashboard",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.80100000000000005,
+    "sentence" : "Anh Tuan said the API is down",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "the datas shows that sales has increase",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I'm collect more envidences",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She dont has any monies",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "lol that was a funny meme",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "thanks for your help, I really appreciate it",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "the tests are passing locally but failing on CI",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I will be out of office tomorrow",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Nguyen and Phuong are working on the migration",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "do you know what time is it now?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "My brother go to work by bus yesterday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "there is many people in the room",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Could you send me the slides from the workshop?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I am not sure if this is the right approach",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "the kubernetes pod keeps restarting",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "we should refactor the payment service",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.997,
+    "sentence" : "Quang, did you merge the hotfix?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Good morning team, the sprint review is at 10",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.996,
+    "sentence" : "Ha Noi is very hot in the summer",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.97699999999999998,
+    "sentence" : "I miss pho and banh mi so much",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "ping me when you are free",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "it works on my machine",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Let's sync up after lunch",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Vy and Khanh have finished the design",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "this function return wrong value when the list is empty",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I has finished my homework",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "the meeting have been moved to Friday",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "we are waiting for the approval from the client",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.89500000000000002,
+    "sentence" : "Trang, can you double check the numbers?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "the new version looks much better",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I didn't received your email",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "he don't know how to use git rebase",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.99399999999999999,
+    "sentence" : "Let's grab pho for lunch today",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.998,
+    "sentence" : "We are flying to Da Nang next week",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "the banh mi place near the office is great",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.86399999999999999,
+    "sentence" : "ok i will ping anh tuan about the release",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Can you ask chi Lan to approve the budget?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Hôm nay tôi đi học muộn.",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Anh gửi em cái file report nhé, cảm ơn anh nhiều.",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Em đang fix bug, chút nữa em gửi anh nhé",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Chiều nay họp lúc mấy giờ vậy anh?",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Mình đã deploy lên staging rồi nha",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Cảm ơn bạn đã giúp đỡ",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Tối nay đi ăn lẩu không mọi người?",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Anh review giúp em cái merge request này với",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Bạn có khỏe không?",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Dự án này cần hoàn thành trước thứ sáu",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Em xin nghỉ phép ngày mai ạ",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Server bị down từ sáng tới giờ",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Cái này chạy được trên máy em mà",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Ok anh, để em check lại",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Trời hôm nay đẹp quá",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.055,
+    "sentence" : "hom nay toi di hoc muon",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "anh check giup em cai PR nay nhe",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.052999999999999999,
+    "sentence" : "Bao oi, an com chua",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "em gui anh file roi nhe",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "toi nay di an lau khong",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.090999999999999998,
+    "sentence" : "chieu nay hop luc may gio",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.034000000000000002,
+    "sentence" : "cam on ban nhieu nha",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "de em xem lai roi bao anh",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "anh oi cai nay bi loi roi",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "mai em nghi phep nha anh",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.023,
+    "sentence" : "sao build lai fail vay",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.001,
+    "sentence" : "ok anh de em fix lien",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.16300000000000001,
+    "sentence" : "ban co khoe khong",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.0030000000000000001,
+    "sentence" : "minh di cafe khong",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "em chua hieu cho nay lam",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.001,
+    "sentence" : "nho deploy truoc 5h nha",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.24299999999999999,
+    "sentence" : "anh oi deploy staging fail roi",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.002,
+    "sentence" : "em push code len branch moi roi nha",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "cai API nay tra ve loi 500",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.0050000000000000001,
+    "sentence" : "chieu nay em demo feature moi cho team",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.46400000000000002,
+    "sentence" : "build tren CI bi fail anh a",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "anh merge PR giup em voi",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.98799999999999999,
+    "sentence" : "ok de em update ticket",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "Em đã update lại config rồi anh",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.012999999999999999,
+    "sentence" : "file log o dau vay anh",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.0089999999999999993,
+    "sentence" : "test pass het roi anh oi",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.0030000000000000001,
+    "sentence" : "sprint nay team minh lam gi",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.001,
+    "sentence" : "anh co the review code cho em khong",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.28499999999999998,
+    "sentence" : "Danke schön, wir sehen uns morgen",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.075999999999999998,
+    "sentence" : "Je suis très fatigué aujourd'hui",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.14099999999999999,
+    "sentence" : "Hola, ¿cómo estás hoy?",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.57799999999999996,
+    "sentence" : "Ich habe keine Zeit heute",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.071999999999999995,
+    "sentence" : "Vamos a la playa mañana",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.28000000000000003,
+    "sentence" : "Saya mau makan nasi goreng",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.050999999999999997,
+    "sentence" : "Questo è molto bello",
+    "verdict" : "notEnglish"
+  },
+  {
+    "englishProbability" : 0.86599999999999999,
+    "sentence" : "Où est la gare s'il vous plaît",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.97799999999999998,
+    "sentence" : "ok thanks",
+    "verdict" : "tooShort"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "👍 !!",
+    "verdict" : "tooShort"
+  },
+  {
+    "englishProbability" : 0.94999999999999996,
+    "sentence" : "lgtm",
+    "verdict" : "tooShort"
+  },
+  {
+    "englishProbability" : 0,
+    "sentence" : "ok anh",
+    "verdict" : "tooShort"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "He have two cats and they is cute.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "They was happy.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "The list of items are on the desk.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "She don't like coffee in the morning.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Everyone in the team know the deadline.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.998,
+    "sentence" : "She go to school yesterday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I have saw that movie last week.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "We will discussed it tomorrow.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "He has went home already.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Yesterday I meet my manager and we talk about the project.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I need an help with this task.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She is a engineer at our company.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Can you send me a information about the order?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "The datas shows that sales has increase.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "We have three meeting today.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I bought two new laptop for the team.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "There are many informations in the document.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I am good in math.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "We discussed about the budget yesterday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She arrived to the office at nine.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I recieved your message this morning.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "The meeting is definately on Friday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Their going to finish the report tonight.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Can you tell me where is the station?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I going home now.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She very busy this week.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "gonna be late today, the traffic are terrible",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "lol he dont know the answer",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "pls check the PR when u has time",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "What time the meeting start?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Why you didn't reply to my email?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I'm collect more envidences",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She dont has any monies",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I have finished the report.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Could you review my pull request when you have a moment?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "The deployment failed because the database migration timed out.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "We should ship the fix before Friday.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "She has been working here since 2019.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Let me know if you need anything else.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "The API returns a 404 when the user ID is missing.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "thanks, will check it tonight",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.997,
+    "sentence" : "omg that's hilarious lol",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Can you tell me where the station is?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "If I were you, I would ask the manager first.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "The team is meeting with the client tomorrow at 10 a.m.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Neither the manager nor the employees were aware of the change.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "I'm not sure this approach will scale.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "Please find the attached invoice for October.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "He said he'd be here by noon.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Our Q3 revenue grew by 12% compared to last year.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "Does anyone know how to restart the Jenkins job?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.999,
+    "sentence" : "What are you going to do this weekend?",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 0.998,
+    "sentence" : "Ok I'll ping Minh about the Kubernetes config.",
+    "verdict" : "english"
+  },
+  {
+    "englishProbability" : 1,
+    "sentence" : "i will call you after lunch.",
+    "verdict" : "english"
+  }
+]

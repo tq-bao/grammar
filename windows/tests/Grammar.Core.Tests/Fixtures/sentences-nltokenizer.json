@@ -1,0 +1,253 @@
+[
+  {
+    "sentences" : [
+      "I like tea. ",
+      "He have two cats. ",
+      "We are fine."
+    ],
+    "text" : "I like tea. He have two cats. We are fine."
+  },
+  {
+    "sentences" : [
+      "Nice 😀 day. ",
+      "She go home now."
+    ],
+    "text" : "Nice 😀 day. She go home now."
+  },
+  {
+    "sentences" : [
+      "Upgrade React Native from 0.83.1 to 0.87.1. ",
+      "It touches both apps. ",
+      "We bump react too."
+    ],
+    "text" : "Upgrade React Native from 0.83.1 to 0.87.1. It touches both apps. We bump react too."
+  },
+  {
+    "sentences" : [
+      "Ping  about it. ",
+      "She go home now."
+    ],
+    "text" : "Ping  about it. She go home now."
+  },
+  {
+    "sentences" : [
+      "I don’t want to mention"
+    ],
+    "text" : "I don’t want to mention"
+  },
+  {
+    "sentences" : [
+      "Hello world"
+    ],
+    "text" : "Hello world"
+  },
+  {
+    "sentences" : [
+      "Is it ready? ",
+      "Yes it is! ",
+      "Great."
+    ],
+    "text" : "Is it ready? Yes it is! Great."
+  },
+  {
+    "sentences" : [
+      "Wait... what happened? ",
+      "I don't know."
+    ],
+    "text" : "Wait... what happened? I don't know."
+  },
+  {
+    "sentences" : [
+      "He said \"stop.\" ",
+      "Then he left."
+    ],
+    "text" : "He said \"stop.\" Then he left."
+  },
+  {
+    "sentences" : [
+      "(See the doc.) ",
+      "It has the numbers."
+    ],
+    "text" : "(See the doc.) It has the numbers."
+  },
+  {
+    "sentences" : [
+      "Mr. Smith is here. ",
+      "He wants tea."
+    ],
+    "text" : "Mr. Smith is here. He wants tea."
+  },
+  {
+    "sentences" : [
+      "We met Dr. Lee yesterday. ",
+      "She was nice."
+    ],
+    "text" : "We met Dr. Lee yesterday. She was nice."
+  },
+  {
+    "sentences" : [
+      "Use e.g. a hash map. ",
+      "It is faster."
+    ],
+    "text" : "Use e.g. a hash map. It is faster."
+  },
+  {
+    "sentences" : [
+      "The U.S. team won. ",
+      "They were happy."
+    ],
+    "text" : "The U.S. team won. They were happy."
+  },
+  {
+    "sentences" : [
+      "Check example.com for details. ",
+      "Then reply."
+    ],
+    "text" : "Check example.com for details. Then reply."
+  },
+  {
+    "sentences" : [
+      "Version v1.2 is out. ",
+      "Please update."
+    ],
+    "text" : "Version v1.2 is out. Please update."
+  },
+  {
+    "sentences" : [
+      "It costs 3.14 dollars. ",
+      "Cheap!"
+    ],
+    "text" : "It costs 3.14 dollars. Cheap!"
+  },
+  {
+    "sentences" : [
+      "first line\n",
+      "second line"
+    ],
+    "text" : "first line\nsecond line"
+  },
+  {
+    "sentences" : [
+      "Hi team,\n",
+      "\n",
+      "I will send the file tmr. ",
+      "Thanks"
+    ],
+    "text" : "Hi team,\n\nI will send the file tmr. Thanks"
+  },
+  {
+    "sentences" : [
+      "line one.\n",
+      "line two."
+    ],
+    "text" : "line one.\nline two."
+  },
+  {
+    "sentences" : [
+      "gonna send u the file tmr, it have the numbers"
+    ],
+    "text" : "gonna send u the file tmr, it have the numbers"
+  },
+  {
+    "sentences" : [
+      "I went home and I was tired. ",
+      "I slept early."
+    ],
+    "text" : "I went home and I was tired. I slept early."
+  },
+  {
+    "sentences" : [
+      "ok thanks"
+    ],
+    "text" : "ok thanks"
+  },
+  {
+    "sentences" : [
+      "what?? ",
+      "really!! ",
+      "ok."
+    ],
+    "text" : "what?? really!! ok."
+  },
+  {
+    "sentences" : [
+      "She said ‘hi.’ ",
+      "He waved."
+    ],
+    "text" : "She said ‘hi.’ He waved."
+  },
+  {
+    "sentences" : [
+      "Meeting at 10 a.m. tomorrow. ",
+      "Be on time."
+    ],
+    "text" : "Meeting at 10 a.m. tomorrow. Be on time."
+  },
+  {
+    "sentences" : [
+      "J. ",
+      "K. Rowling wrote it. ",
+      "I read it."
+    ],
+    "text" : "J. K. Rowling wrote it. I read it."
+  },
+  {
+    "sentences" : [
+      "This is it… Done."
+    ],
+    "text" : "This is it… Done."
+  },
+  {
+    "sentences" : [
+      "I am fine.Thanks for asking."
+    ],
+    "text" : "I am fine.Thanks for asking."
+  },
+  {
+    "sentences" : [
+      "Call me at 5pm. ",
+      "I am free then."
+    ],
+    "text" : "Call me at 5pm. I am free then."
+  },
+  {
+    "sentences" : [
+      "the datas shows that sales has increase. we need more"
+    ],
+    "text" : "the datas shows that sales has increase. we need more"
+  },
+  {
+    "sentences" : [
+      "I. Introduction. ",
+      "This is the first part."
+    ],
+    "text" : "I. Introduction. This is the first part."
+  },
+  {
+    "sentences" : [
+      "Hi Bao. ",
+      "Can you check the PR? ",
+      "Thanks!"
+    ],
+    "text" : "Hi Bao. Can you check the PR? Thanks!"
+  },
+  {
+    "sentences" : [
+      "   leading spaces. trailing   "
+    ],
+    "text" : "   leading spaces. trailing   "
+  },
+  {
+    "sentences" : [
+      "A.B.C. is a company. ",
+      "It sells things."
+    ],
+    "text" : "A.B.C. is a company. It sells things."
+  },
+  {
+    "sentences" : [
+      "Plan A. Then plan B."
+    ],
+    "text" : "Plan A. Then plan B."
+  }
+]

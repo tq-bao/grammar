@@ -1,0 +1,169 @@
+# Từ tiếng Anh thông dụng cho LanguageDetector. Mỗi dòng có thể chứa nhiều từ, cách nhau bằng khoảng trắng.
+# Chỉ cần dạng gốc: LanguageDetector tự bỏ hậu tố -s, -es, -ed, -ing, -ly, -er, -est.
+# Dạng bất quy tắc (went, children...) phải liệt kê riêng. Dòng bắt đầu bằng # là chú thích.
+
+# Từ chức năng
+a an the this that these those there here what which who whom whose where when why how
+i me my mine myself you your yours yourself yourselves he him his himself she her hers herself
+it its itself we us our ours ourselves they them their theirs themselves one ones
+am is are was were be been being do does did done doing have has had having
+will would shall should can could may might must ought
+not no nor yes yeah yep nope ok okay
+and or but if then else so because since as than though although while unless until whether
+of in on at by for with without within about above below under over into onto from to up down
+out off through across along around behind beyond between among against toward towards upon via per
+after before during except inside outside near next past till
+all any some none each every both either neither few many much more most less least
+other another such same own only just also too very quite rather really even still yet already
+again ever never always often sometimes usually maybe perhaps please thanks thank sorry hello hi hey bye
+something anything nothing everything someone anyone everyone nobody somebody anybody everybody
+somewhere anywhere everywhere nowhere sometime anyway anyhow somehow however therefore otherwise instead
+almost enough else far away back forward together apart soon later now today tonight tomorrow yesterday
+ago once twice first second third last next early late
+
+# Số
+zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen
+sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred
+thousand million billion half quarter double
+
+# Rút gọn
+i'm i've i'll i'd you're you've you'll you'd he's he'll he'd she's she'll she'd it's it'll
+we're we've we'll we'd they're they've they'll they'd that's there's here's what's who's where's
+how's let's don't doesn't didn't isn't aren't wasn't weren't haven't hasn't hadn't won't wouldn't
+can't cannot couldn't shouldn't mustn't mightn't needn't ain't y'all gonna wanna gotta lemme gimme dunno
+
+# Động từ (dạng gốc)
+accept access achieve act add address adjust admit advise afford agree aim allow answer appear apply ping grab fly
+appreciate approve argue arrange arrive ask assign assume attach attend avoid bake be bear beat become
+begin believe belong bet bind bite blame block blow boil book borrow bother break breathe bring build
+burn buy calculate call cancel care carry catch cause celebrate change charge chat check cheer choose
+claim clean clear click climb close collect combine come comment commit compare compile complain
+complete confirm connect consider contain continue contribute control convert cook copy correct cost
+count cover crash create cross cry cut dance deal debug decide declare decrease define delay delete
+deliver demand deny depend deploy describe deserve design destroy detect develop die disable discover
+discuss dislike display divide do download drag draw dream dress drink drive drop dry earn eat edit
+email enable encourage end enjoy ensure enter escape estimate expect experience explain export extend
+fail fall feel fetch fight figure fill find finish fit fix flow fly focus fold follow forget forgive
+format freeze generate get give go grab grant greet grow guess handle hang happen hate have hear help
+hide hire hit hold hope hurry hurt identify ignore imagine implement import improve include increase
+inform install intend introduce invite involve join joke judge jump keep kick kill knock know land
+last laugh launch lay lead learn leave lend let lie lift like limit link listen live load lock log
+look lose love maintain make manage mark marry match matter mean measure meet mention merge migrate
+mind miss mix monitor move need note notice obtain occur offer open operate order organize own pack
+paint park parse pass pause pay perform pick place plan play point post pour practice prefer prepare
+present press pretend prevent print process produce promise protect prove provide publish pull push
+put quit raise reach read realize receive recommend record recover reduce refactor refer refresh
+refuse regret reject relax release rely remain remember remind remove rename render repair repeat
+replace reply report request require reset resolve respond rest restart restore retry return reuse
+review revert ride ring rise risk roll run save say scan schedule score scroll search see seem select
+sell send separate serve set settle shake shall share shift ship shoot shop show shut sign sing sink
+sit skip sleep slide slow smell smile solve sort sound speak spend split stand start state stay steal
+step stick stop store study submit succeed suffer suggest supply support suppose sure surprise switch
+sync take talk taste teach tell tend test text thank think throw tie touch track trade train transfer
+translate travel treat trigger trust try turn type understand undo unlock update upgrade upload use
+validate verify view visit vote wait wake walk want warn wash watch wear welcome win wish wonder work
+worry wrap write yell
+
+# Dạng bất quy tắc
+went gone was were been saw seen did done had has made said told took taken came got gotten gave given
+knew known thought bought brought felt found left kept meant met paid put read ran sat sent spent stood
+understood wrote written began begun broke broken chose chosen drove driven ate eaten fell fallen flew
+flown forgot forgotten forgave forgiven grew grown hid hidden held hit hurt led lost laid lay rode
+ridden rang rung rose risen sang sung sank sunk shook shaken shot shut slept spoke spoken stole stolen
+struck swam swum threw thrown wore worn won woke woken bit bitten blew blown built burnt caught dealt
+dug drew drawn dreamt drank drunk fed fought froze frozen hung heard lent lit mistook paid proved
+quit rewrote sold shone sought spun split spread stuck stung swept swore swung taught tore torn
+undid wept wound withdrew children child people person men man women woman feet foot teeth tooth
+mice mouse geese lives knives wives leaves data media criteria analyses better best worse worst
+further furthest elder
+
+# Danh từ
+ability access account action activity address advice age agenda agreement air airport album alert
+amount analysis animal answer apartment app application appointment approach area argument arm army
+art article attempt attention audience author baby background bag ball bank bar base basis bath
+battery beach bed beer beginning behavior benefit bike bill bird birthday bit block blog blood board
+boat body book boss bottle bottom box boy brain branch bread break breakfast bridge brother browser
+budget bug building bus business button cake call camera campaign capital car card career case cash cat
+cause center century chair challenge chance change channel chapter character charge chart chat check
+chicken choice church city class client clock code coffee colleague color comment community company
+competition complaint component computer concept concern condition conference config configuration
+connection content context contract control conversation copy corner cost country couple course court
+cousin cover credit crew culture cup customer cycle dad damage danger dashboard database date daughter
+day deadline deal death debate decision demo department deployment design desk detail developer
+device dialog difference dinner direction director discussion disease doc doctor document dog dollar
+door draft dream drink driver duty ear earth economy edge education effect effort egg election
+element email employee end energy engine engineer entry environment error evening event evidence exam
+example exception experience expert eye face fact factor family fan farm father fault feature fee
+feedback feeling field file film finger fire firm fish flag flight floor flow flower folder food
+force forest form friend front fruit fun function future game gap garden gas gate girl glass goal
+god gold government grade grammar group growth guest guide guy hair hall hand hat head health heart
+heat hell help history hole holiday home homework hope horse hospital hotel hour house husband idea
+image impact income index industry info information input instance interest internet interview
+investment island issue item job joke journey key kid kind king kitchen knowledge lab lady lake land
+language laptop law layer leader level library life light limit line link list lot love lunch
+machine mail manager market master match material math meal meaning meeting member memory message
+method middle mind minute mistake mode model mom moment money month mood morning mother mountain
+mouth movie music name nation nature need network news night node noise note number object office
+oil opinion opportunity option order org outcome output owner page pain pair paper parent park part
+partner party password path patient pattern peace period person phone photo picture piece place plan
+planet plant platform player plenty pocket point police policy pool population position post pot
+power practice president pressure price priority problem process product profile program progress
+project property proposal purpose quality quarter question queue rain range rate reason record
+region relationship release repo report request research resource response rest restaurant result
+review risk river road rock role room root route rule salary sale school science screen script sea
+season seat section security server service session shape share shop side sign site situation size
+skill sky slide society software solution son song sound source space speech speed spring staff
+stage standard star state status step stock store story street strength structure student studio
+style subject success sugar summer sun support surface system table tag task tax tea teacher team
+technology term test text theory thing ticket time tip title tool top topic town track traffic
+training tree trip trouble truth turn type uncle unit university update user value version video view
+village voice wall war water way weather web website week weekend weight wife wind window winter
+word world worker year youth
+
+# Tính từ, trạng từ
+able active actual afraid alive alone amazing angry annoying available aware awesome awful bad basic
+beautiful big bitter black blue boring born brave brief bright broad broken brown busy calm careful
+cheap clean clear close cold comfortable common complete complex cool correct crazy critical cute
+dangerous dark dead dear deep default different difficult direct dirty due dumb easy empty entire
+equal exact excellent excited expensive extra fair false familiar famous fancy fantastic fast fat
+final fine firm flat free fresh friendly full funny general gentle glad global good gorgeous great
+green grey guilty happy hard healthy heavy helpful high honest hot huge hungry important impossible
+interesting internal kind large lazy legal light likely little live local lonely long loose loud
+lovely low lucky main major manual mean minor modern narrow nasty native natural nearby necessary
+negative nervous new nice normal obvious odd old open opposite optional orange ordinary original
+perfect personal pink plain pleasant polite poor popular positive possible powerful pretty previous
+private proper proud public pure purple quick quiet ready real recent red regular relevant remote
+responsible rich right rough round rude sad safe scared secret serious sharp short sick silly
+similar simple single slight slow small smart soft solid special specific stable straight strange
+strict strong stupid successful sudden sweet tall terrible thick thin tired tiny total tough true
+typical ugly unique unknown upset urgent useful usual valid various warm weak weird wet white whole
+wide wild wise wonderful wrong yellow young actually basically certainly clearly currently directly
+easily especially exactly finally generally hopefully immediately literally mostly nearly obviously
+probably properly quickly rarely recently seriously simply slowly suddenly totally truly unfortunately
+
+# Ngày, tháng
+monday tuesday wednesday thursday friday saturday sunday january february march april may june
+july august september october november december am pm
+
+# Chat và viết tắt thường gặp
+u ur r ya pls plz thx ty np lol lmao omg btw fyi asap tmr tmrw idk imo imho brb afk wfh ooo eta
+lgtm ptal nvm tbh irl dm pm cc ok okie yup hmm haha hehe wow oops ouch yay nah sup gg cya xd
+info app apps
+
+# Từ kỹ thuật
+api apis backend frontend fullstack ui ux css html json yaml xml sql http https url urls uri
+docker kubernetes pod pods cluster container containers nginx redis postgres mysql mongo kafka aws gcp azure
+git github gitlab commit commits branch branches merge rebase cherry pick pull push fork clone diff
+pr prs mr ci cd pipeline pipelines build builds deploy deployment staging prod production dev
+hotfix bugfix bug bugs ticket tickets jira sprint standup retro backlog epic story
+log logs logging metric metrics alert alerts dashboard dashboards grafana sentry datadog
+env vars var config configs param params token tokens auth login logout signup oauth jwt
+null undefined boolean string int integer float array object class method function callback
+async await promise thread threads cache caching queue queues endpoint endpoints webhook
+release releases version versions changelog readme docs wiki slack teams zoom meet calendar
+laptop desktop mobile ios android iphone windows mac macos linux chrome firefox safari edge
+refactor refactoring migration migrations schema schemas rollback rollout timeout timeouts crash
+crashes regression flaky test tests unit integration e2e qa repo repos monorepo npm yarn pnpm
+typescript javascript python java golang rust swift kotlin react vue angular node nodejs
+spreadsheet slides workshop webinar onboarding offboarding feedback roadmap milestone kpi okr
+email emails inbox draft cafe pizza

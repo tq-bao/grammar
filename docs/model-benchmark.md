@@ -49,3 +49,33 @@ xcodebuild -project GrammarApp.xcodeproj -scheme GrammarBench -configuration Rel
 | I am good in math. | (giữ nguyên) | I am good at math. |
 
 Không có kết quả nào bị EditGuard loại, tức là model không viết lại câu trong bộ test này.
+
+## Bản Windows (LLamaSharp)
+
+Bản Windows (`windows/`) chạy llama.cpp qua LLamaSharp 0.30.0, không dùng tag `b12376` như bản macOS. Golden set và prompt dùng chung với bản macOS, nên mục này kiểm tra việc đổi runtime có làm đổi kết quả hay không.
+
+Đo ngày 2026-11-14 trên cùng máy Apple M4 Pro (48 GB), bằng `Grammar.Bench` (backend Metal của LLamaSharp; trên Windows là Vulkan hoặc CPU):
+
+```bash
+cd windows && dotnet build src/Grammar.Bench -c Release
+dotnet src/Grammar.Bench/bin/Release/net10.0/Grammar.Bench.dll \
+  --model ../GrammarApp/Resources/Models/Qwen2.5-7B-Instruct-Q4_K_M.gguf \
+  --model ../GrammarApp/Resources/Models/Qwen2.5-3B-Instruct-Q4_K_M.gguf [--cpu]
+```
+
+| Model | Phần cứng | Giữ nguyên câu đúng | Khớp đáp án | EditGuard loại | p50 | p95 | Nạp + warm-up |
+|---|---|---|---|---|---|---|---|
+| **Qwen2.5-7B-Instruct-Q4_K_M** | GPU (Metal, 29 layer) | **100%** | **88%** | 0% | 274 ms | 419 ms | 3.4 s |
+| Qwen2.5-3B-Instruct-Q4_K_M | GPU (Metal, 37 layer) | 100% | 76% ✗ | 0% | 141 ms | 217 ms | 1.5 s |
+| **Qwen2.5-7B-Instruct-Q4_K_M** | CPU (`--cpu`) | **100%** | **88%** | 0% | 456 ms | 731 ms | 7.9 s |
+| Qwen2.5-3B-Instruct-Q4_K_M | CPU (`--cpu`) | 100% | 82% | 0% | 220 ms | 355 ms | 3.7 s |
+
+- Model 7B cho đúng kết quả của bản macOS (100% / 88%), và sai đúng 4 câu ở mục "Lỗi còn lại của 7B". Đổi runtime không làm đổi chất lượng.
+- 3B cho kết quả hơi khác nhau giữa GPU và CPU, do sai số tính toán của từng backend làm đổi token được chọn ở vài câu.
+- Số đo CPU ở đây là CPU M4 Pro. CPU laptop Windows phổ thông có thể chậm hơn vài lần. Cần chạy lại `Grammar.Bench.exe` (nằm cạnh `Grammar.exe`) trên máy Windows thật và ghi vào bảng dưới.
+
+### Máy Windows thật
+
+| Ngày | CPU / GPU / RAM | Model | Phần cứng | Giữ nguyên | Khớp | p50 | p95 | Nạp + warm-up |
+|---|---|---|---|---|---|---|---|---|
+| (chưa đo) | | | | | | | | |

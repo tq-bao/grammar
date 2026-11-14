@@ -1,0 +1,34 @@
+# Build và test bản Windows trên máy Windows thật của GitHub Actions.
+# Unit test của Grammar.Core chạy được mọi nơi; ở đây chạy trên Windows để chắc build WPF và test đều ổn trên Windows.
+# Test engine với model thật tự bỏ qua (không tải model ~4.7 GB trong CI).
+name: windows
+
+on:
+  push:
+    paths:
+      - "windows/**"
+      - "GrammarKit/**"
+      - "GrammarAppTests/Fixtures/**"
+      - ".github/workflows/windows.yml"
+  pull_request:
+    paths:
+      - "windows/**"
+      - "GrammarKit/**"
+      - "GrammarAppTests/Fixtures/**"
+      - ".github/workflows/windows.yml"
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Build
+        run: dotnet build windows/Grammar.sln -c Release
+      - name: Test
+        run: dotnet test windows/Grammar.sln -c Release --no-build
+      - name: Publish (kiểm tra đóng gói)
+        shell: pwsh
+        run: dotnet publish windows/src/Grammar.App -c Release -r win-x64 --self-contained -o publish
