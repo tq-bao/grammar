@@ -12,3 +12,6 @@ build/
 *.xcodeproj/project.xcworkspace/xcuserdata/
 DerivedData/
 .DS_Store
+
+# File cài (scripts/make-dmg.sh)
+dist/

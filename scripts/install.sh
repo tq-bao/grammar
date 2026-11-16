@@ -3,21 +3,19 @@
 #
 #   scripts/install.sh
 #
-# - Chỉ giữ model mặc định (ModelLocator.defaultModelFileName) trong bản cài.
-# - Ký bằng chứng chỉ "Grammar Local Signing" (tạo bằng scripts/create-signing-cert.sh) để quyền
-#   Accessibility còn nguyên sau mỗi lần cài lại. Không có chứng chỉ thì ký ad-hoc và cảnh báo.
+# - App không chứa model. Nếu đã có model mặc định trong GrammarApp/Resources/Models/ (tải bằng
+#   scripts/download-model.sh) thì copy sang ~/Library/Application Support/Grammar/Models/ để app
+#   không phải tải lại. Không có thì app hỏi tải model ở lần mở đầu tiên.
+# - Ký bằng chứng chỉ "Grammar Local Signing" (xem scripts/lib/sign.sh).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-IDENTITY_NAME="${GRAMMAR_SIGNING_IDENTITY:-Grammar Local Signing}"
 DEST="/Applications/Grammar.app"
+MODELS_DIR="$HOME/Library/Application Support/Grammar/Models"
 cd "$ROOT"
+source scripts/lib/sign.sh
 
 DEFAULT_MODEL="$(sed -n 's/.*defaultModelFileName = "\(.*\)".*/\1/p' GrammarKit/Engine/ModelLocator.swift)"
-if [[ -z "$DEFAULT_MODEL" || ! -f "GrammarApp/Resources/Models/$DEFAULT_MODEL" ]]; then
-  echo "Thiếu model mặc định '$DEFAULT_MODEL' trong GrammarApp/Resources/Models/. Chạy scripts/download-model.sh trước." >&2
-  exit 1
-fi
 
 echo "==> Build Release"
 ./scripts/fetch-llama.sh >/dev/null
@@ -34,22 +32,22 @@ sleep 1
 echo "==> Copy vào $DEST"
 rm -rf "$DEST"
 cp -Rc "$SRC" "$DEST" 2>/dev/null || cp -R "$SRC" "$DEST"
-find "$DEST/Contents/Resources/Models" -type f ! -name "$DEFAULT_MODEL" -delete
 
-IDENTITY="$(security find-identity -p codesigning 2>/dev/null | awk -v n="\"$IDENTITY_NAME\"" 'index($0, n) {print $2; exit}')"
-if [[ -n "$IDENTITY" ]]; then
-  echo "==> Ký bằng \"$IDENTITY_NAME\""
+LOCAL_MODEL="GrammarApp/Resources/Models/$DEFAULT_MODEL"
+if [[ -f "$MODELS_DIR/$DEFAULT_MODEL" ]]; then
+  echo "==> Đã có model ở $MODELS_DIR"
+elif [[ -f "$LOCAL_MODEL" ]]; then
+  echo "==> Copy model $DEFAULT_MODEL sang $MODELS_DIR"
+  mkdir -p "$MODELS_DIR"
+  # cp -c: clone APFS, gần như tức thì và không tốn thêm chỗ.
+  cp -c "$LOCAL_MODEL" "$MODELS_DIR/$DEFAULT_MODEL" 2>/dev/null || cp "$LOCAL_MODEL" "$MODELS_DIR/$DEFAULT_MODEL"
 else
-  IDENTITY="-"
-  echo "!!  Không thấy chứng chỉ \"$IDENTITY_NAME\", ký ad-hoc."
-  echo "    Quyền Accessibility sẽ mất sau mỗi lần cài. Chạy scripts/create-signing-cert.sh để sửa."
+  echo "==> Chưa có model, app sẽ hỏi tải ở lần mở đầu tiên"
 fi
-for framework in "$DEST"/Contents/Frameworks/*.framework; do
-  codesign --force --sign "$IDENTITY" "$framework" >/dev/null 2>&1
-done
-codesign --force --sign "$IDENTITY" "$DEST" >/dev/null 2>&1
-codesign --verify --deep --strict "$DEST"
+
+IDENTITY="$(grammar_signing_identity)"
+grammar_sign_app "$DEST" "$IDENTITY"
 
 echo "==> Mở Grammar"
 open "$DEST"
-echo "Xong: $DEST ($(du -sh "$DEST" | cut -f1)), model $DEFAULT_MODEL"
+echo "Xong: $DEST ($(du -sh "$DEST" | cut -f1))"

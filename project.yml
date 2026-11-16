@@ -36,14 +36,12 @@ targets:
     type: application
     platform: macOS
     sources:
+      # Model không đóng gói vào app: app tải model ở lần mở đầu tiên vào
+      # ~/Library/Application Support/Grammar/Models. Thư mục Resources/Models (git-ignored)
+      # chỉ để chứa model cho dev, test và GrammarBench.
       - path: GrammarApp
         excludes:
           - "Resources/Models"
-      # Thư mục model (git-ignored) được copy nguyên vào app bundle.
-      - path: GrammarApp/Resources/Models
-        type: folder
-        buildPhase: resources
-        optional: true
     dependencies:
       - target: GrammarKit
       - framework: Vendor/llama.xcframework

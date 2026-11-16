@@ -7,6 +7,12 @@ public enum CheckState: Equatable, Sendable {
     case idle
     /// Đang nạp model, chưa kiểm tra được.
     case loadingModel
+    /// Chưa có model trên máy, chờ người dùng đồng ý tải.
+    case modelMissing
+    /// Đang tải model: đã có `received` trên `total` byte.
+    case downloadingModel(received: Int64, total: Int64)
+    /// Đã tải xong, đang kiểm tra file model.
+    case verifyingModel
     case checking(String)
     case ok(String)
     case corrected(WordDiff)
@@ -14,6 +20,14 @@ public enum CheckState: Equatable, Sendable {
     /// Mô hình viết lại câu (EditGuard từ chối) nên không hiển thị kết quả.
     case uncertain(String)
     case modelError(String)
+
+    /// Chưa có engine vì model đang nạp, chưa tải, đang tải hoặc đang kiểm tra.
+    public var isWaitingForModel: Bool {
+        switch self {
+        case .loadingModel, .modelMissing, .downloadingModel, .verifyingModel: true
+        default: false
+        }
+    }
 }
 
 /// Trạng thái của section "Bản dịch" trên panel.
@@ -65,7 +79,8 @@ public final class CheckCoordinator {
 
     private var engine: (any GrammarEngine)?
     private var translator: (any TranslationEngine)?
-    private var engineError: String?
+    /// Trạng thái hiển thị khi chưa có engine: đang nạp, cần tải, đang tải, đang kiểm tra hoặc lỗi model.
+    private var unavailableState: CheckState = .loadingModel
     private let gate: LanguageGate
     private let editGuard: EditGuard
     private let debounce: Duration
@@ -101,17 +116,44 @@ public final class CheckCoordinator {
     public func setEngine(_ engine: any GrammarEngine, translator: (any TranslationEngine)? = nil) {
         self.engine = engine
         self.translator = translator
-        engineError = nil
-        if state == .loadingModel {
+        let wasUnavailable = state == unavailableState
+        unavailableState = .loadingModel
+        if wasUnavailable || state.isWaitingForModel {
             if sentence.isEmpty { state = .idle } else { submit(sentence, from: source, immediately: true) }
         }
     }
 
     public func setEngineError(_ message: String) {
+        setUnavailable(.modelError(message))
+    }
+
+    /// Đang nạp model (ví dụ ngay sau khi tải xong).
+    public func setLoadingModel() {
+        setUnavailable(.loadingModel)
+    }
+
+    /// Chưa có model trên máy.
+    public func setModelMissing() {
+        setUnavailable(.modelMissing)
+    }
+
+    /// Tiến độ tải model.
+    public func setModelDownloadProgress(received: Int64, total: Int64) {
+        setUnavailable(.downloadingModel(received: received, total: total))
+    }
+
+    /// Đã tải xong, đang kiểm tra checksum.
+    public func setVerifyingModel() {
+        setUnavailable(.verifyingModel)
+    }
+
+    /// Bỏ engine hiện tại (nếu có) và hiển thị `newState` cho tới khi có engine mới.
+    private func setUnavailable(_ newState: CheckState) {
         engine = nil
         translator = nil
-        engineError = message
-        state = .modelError(message)
+        unavailableState = newState
+        state = newState
+        pendingTask?.cancel()
         cancelTranslation()
     }
 
@@ -120,7 +162,7 @@ public final class CheckCoordinator {
         if isPaused && source.isTracked { return }
 
         let trimmed = newSentence.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed == sentence, !immediately, state != .idle, state != .loadingModel { return }
+        if trimmed == sentence, !immediately, state != .idle, !state.isWaitingForModel { return }
 
         sentence = trimmed
         self.source = source
@@ -146,14 +188,17 @@ public final class CheckCoordinator {
     private func run(_ text: String, relaxed: Bool) async {
         guard text == sentence else { return }
 
+        // Chưa có engine thì giữ thông báo về model (cần tải, đang tải…) thay vì "Đang chờ".
+        let idleState: CheckState = engine == nil ? unavailableState : .idle
+
         if text.isEmpty {
-            state = .idle
+            state = idleState
             return
         }
 
         switch gate.evaluate(text, relaxed: relaxed) {
         case .tooShort:
-            state = .idle
+            state = idleState
             return
         case .notEnglish:
             state = .notEnglish(text)
@@ -168,7 +213,7 @@ public final class CheckCoordinator {
         }
 
         guard let engine else {
-            state = engineError.map(CheckState.modelError) ?? .loadingModel
+            state = unavailableState
             return
         }
 

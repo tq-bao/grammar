@@ -1,120 +1,87 @@
 # Grammar
 
-App menu bar cho macOS, kiểm tra ngữ pháp tiếng Anh **offline**. App đọc câu bạn đang gõ ở bất kỳ app nào (Slack, Teams, Chrome, Notes…). Nếu câu là tiếng Anh, app hiển thị trong một panel nổi:
+App menu bar cho macOS, kiểm tra ngữ pháp tiếng Anh **offline**. App đọc câu bạn đang gõ ở bất kỳ app nào (Slack, Teams, Chrome…) và hiện kết quả trên một panel nổi:
 
-- **Phần trên:** câu bạn đang gõ, gạch chân đỏ dưới cụm sai (khoảng trống được tô đỏ ở chỗ thiếu từ).
-- **Phần dưới:** câu đã sửa, phần sửa được tô xanh. Bấm **⌃⌥C** (hoặc menu bar › Copy câu đã sửa) để copy.
-- **Bản dịch** (tuỳ chọn, mặc định tắt): bản dịch tiếng Việt của câu đã sửa, hoặc của câu gốc khi câu đã đúng. Bật trong **Cài đặt › Dịch sang tiếng Việt**. Bản dịch hiện sau câu sửa một chút. Việc dịch dùng chính model sửa ngữ pháp, chạy trên máy, không cần mạng. Bật Dịch thì app dùng thêm khoảng 120 MB RAM.
+- **Phần trên:** câu bạn đang gõ, cụm sai được gạch chân đỏ.
+- **Phần dưới:** câu đã sửa, phần sửa tô xanh. Bấm **⌃⌥C** để copy.
+- **Bản dịch** (tuỳ chọn): bản dịch tiếng Việt, bật trong Cài đặt.
 
-Panel **chỉ để xem**. Nền trong suốt theo cài đặt, và mặc định mọi click hay cuộn chuột trên panel đều đi xuyên xuống app phía sau. Độ mờ nền, góc màn hình và độ rộng chỉnh trong **Cài đặt**.
+App chỉ sửa ngữ pháp, chính tả và dấu câu, và **không bao giờ ghi vào app bạn đang gõ**. Model (Qwen2.5-7B-Instruct) chạy ngay trên máy. Nội dung bạn gõ không bị gửi ra ngoài.
 
-**Di chuyển panel:** nhấn giữ dải **header** ở trên cùng panel (có biểu tượng ≡ và chữ "Grammar") rồi kéo. Header luôn nhận chuột và luôn có nền mờ tối thiểu 60%, kể cả khi bạn đặt độ mờ nền 0%. Phần còn lại của panel vẫn cho click xuyên qua.
+> Bản Windows: xem [windows/README.md](windows/README.md).
 
-Muốn kéo được ở bất kỳ đâu trên panel thì vào Cài đặt và tắt **Click xuyên qua panel** (panel hiện viền nét đứt). Kéo xong thì bật lại.
+## Download
 
-Vị trí đã kéo được lưu lại, kể cả sau khi khởi động lại app. Bấm **Về góc đã chọn**, hoặc chọn một góc khác, để đưa panel về góc.
+**[⬇ Tải Grammar-1.0.dmg](https://github.com/tq-bao/grammar/releases/latest/download/Grammar-1.0.dmg)** (khoảng 10 MB, macOS, Apple Silicon)
 
-App chỉ sửa ngữ pháp, chính tả và dấu câu, giữ nguyên ý và giọng văn, và **không bao giờ ghi vào app bạn đang gõ**. Model ngôn ngữ (Qwen2.5-7B-Instruct, GGUF 4-bit) chạy trên máy qua llama.cpp. Nội dung bạn gõ không bị gửi ra ngoài và không bị lưu xuống đĩa.
+File cài không chứa model. App tải model (một lần) ở lần mở đầu tiên. Các phiên bản khác xem ở trang [Releases](https://github.com/tq-bao/grammar/releases).
 
-> **Bản Windows:** xem [windows/README.md](windows/README.md). Cùng chức năng, trừ phím tắt và tính năng Dịch.
+## Cài đặt
 
-## Yêu cầu
+Cần Mac Apple Silicon, macOS 26 trở lên, nên có 16 GB RAM và khoảng 5 GB ổ đĩa trống.
 
-- Mac Apple Silicon, macOS 26 trở lên, nên có từ 16 GB RAM (model 7B chiếm khoảng 5 GB khi chạy).
-- Xcode 27 và [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
-- **Không** cần Metal Toolchain: llama.cpp được dùng ở dạng xcframework build sẵn, Metal shader đã nhúng bên trong.
+**1. Kéo Grammar vào Applications.** Mở file `Grammar-<version>.dmg`, kéo **Grammar** vào **Applications**, rồi mở app từ Applications.
 
-## Build
+<p align="center"><img src="docs/images/install-dmg.png" alt="Kéo Grammar vào thư mục Applications" width="560"></p>
 
-```bash
-# 1. Tải llama.xcframework (ghim tag b12376) vào Vendor/
-./scripts/fetch-llama.sh
+> Nếu macOS báo không mở được vì không xác định được nhà phát triển: chuột phải vào Grammar › **Open** › **Open**.
 
-# 2. Tải model mặc định (~4.7 GB) vào GrammarApp/Resources/Models/
-./scripts/download-model.sh bartowski/Qwen2.5-7B-Instruct-GGUF Qwen2.5-7B-Instruct-Q4_K_M.gguf
+**2. Tải model.** Lần đầu mở app, chọn **Tải ngay**. Model chỉ tải một lần, sau đó app chạy hoàn toàn offline. Nếu chọn **Để sau**, lúc nào muốn tải thì vào menu bar › **Tải model…**.
 
-# 3. Sinh Xcode project và build
-xcodegen generate
-xcodebuild -project GrammarApp.xcodeproj -scheme GrammarApp -configuration Release -derivedDataPath build build
+<p align="center"><img src="docs/images/download-model-alert.png" alt="Hộp thoại hỏi tải model"></p>
 
-# 4. Chạy
-open build/Build/Products/Release/Grammar.app
-```
+**3. Cấp quyền Accessibility.** App cần quyền này để đọc ô bạn đang gõ. Chọn **Open System Settings** khi được hỏi (hoặc menu bar › **Cấp quyền Accessibility…**):
 
-### Cài vào /Applications (khuyên dùng)
+<p align="center"><img src="docs/images/accessibility-prompt.png" alt="macOS hỏi cấp quyền Accessibility cho Grammar"></p>
 
-```bash
-./scripts/create-signing-cert.sh   # chỉ cần chạy một lần
-./scripts/install.sh               # build Release, cài vào /Applications, ký, rồi mở app
-```
+Rồi bật **Grammar** trong Privacy & Security › Accessibility. App tự chạy sau khoảng 1 giây.
 
-- `create-signing-cert.sh` tạo chứng chỉ ký code tự ký **Grammar Local Signing** trong login keychain.
-- `install.sh` ký app bằng chứng chỉ này, nên macOS nhận diện app theo bundle id và chứng chỉ thay vì theo mã băm của từng bản build. Nhờ vậy **quyền Accessibility còn nguyên sau mỗi lần cài lại**.
-- Nếu không có chứng chỉ thì `install.sh` ký ad-hoc, và bạn phải cấp lại quyền sau mỗi lần cài.
-- Bản cài chỉ giữ model mặc định.
+<p align="center"><img src="docs/images/accessibility-settings.png" alt="Bật Grammar trong Privacy & Security › Accessibility"></p>
 
-Icon của app được vẽ bằng `swift scripts/make-icon.swift`. Script này sinh `GrammarApp/Resources/Assets.xcassets/AppIcon.appiconset`.
-
-Khi build thủ công như ở bước 3, mọi file `.gguf` trong `GrammarApp/Resources/Models/` đều được copy vào app bundle. Muốn app nhẹ hơn thì chỉ để lại model mặc định.
-
-## Lần chạy đầu: cấp quyền Accessibility
-
-App cần quyền **Accessibility** để đọc ô nhập liệu ở app khác và để giả lập ⌘C cho phím tắt.
-
-1. Khi app hỏi, chọn **Open System Settings**, hoặc chọn menu bar › **Cấp quyền Accessibility…**.
-2. Bật **Grammar** trong System Settings › Privacy & Security › Accessibility.
-3. App tự bắt đầu theo dõi trong vòng 1 giây, không cần khởi động lại.
-
-> Nếu bật quyền rồi mà panel vẫn báo thiếu quyền, nghĩa là mục Grammar trong danh sách thuộc về một bản build cũ (ký ad-hoc). Chọn mục đó, bấm **−** để xoá, rồi bấm **+** để thêm lại `/Applications/Grammar.app`. Khi đã cài bằng `scripts/install.sh` và có chứng chỉ, bạn chỉ cần làm việc này một lần.
->
-> Trên máy công ty quản lý bằng MDM, IT có thể chặn quyền này. **Khi đó app không nhận được câu nào**, vì panel chỉ để xem và phím tắt ⌃⌥G cũng cần quyền này để lấy đoạn bôi đen.
+> Đã bật mà panel vẫn báo thiếu quyền: xoá mục Grammar trong danh sách (nút **−**) rồi thêm lại `/Applications/Grammar.app` (nút **+**).
 
 ## Cách dùng
 
 | Thao tác | Kết quả |
 |---|---|
-| Gõ tiếng Anh ở app bất kỳ rồi dừng khoảng 0.7 giây | Panel kiểm tra câu đang chứa con trỏ |
-| Bôi đen một từ hoặc một đoạn trong ô đang gõ | Panel tự kiểm tra đúng đoạn bôi đen, kể cả khi chỉ có 1 từ. Bỏ bôi đen thì quay về câu chứa con trỏ. Vùng chọn dài hơn 1000 ký tự (ví dụ ⌘A) thì vẫn kiểm tra câu chứa con trỏ |
-| Bôi đen một đoạn rồi bấm **⌃⌥G** | Kiểm tra đoạn đó, kể cả khi chỉ có 1 từ. Dùng cho app không đọc được ô nhập. Clipboard được khôi phục như cũ |
-| **⌃⌥C** hoặc menu bar › Copy câu đã sửa | Copy câu đã sửa vào clipboard (chỉ khi panel đang báo có lỗi) |
-| Menu bar › Ẩn/Hiện panel, Tạm dừng/Tiếp tục, Thoát | |
-| Menu bar › **Cài đặt…** (⌘,) | Chỉnh độ mờ nền (0–100%), bật/tắt click xuyên qua (tắt để kéo panel), góc màn hình, độ rộng panel, bật/tắt Dịch sang tiếng Việt. Thay đổi áp dụng ngay và được lưu lại |
+| Gõ tiếng Anh rồi dừng khoảng 0.7 giây | Kiểm tra câu đang chứa con trỏ |
+| Bôi đen một từ hoặc một đoạn | Kiểm tra đúng đoạn bôi đen |
+| Bôi đen rồi bấm **⌃⌥G** | Kiểm tra đoạn bôi đen, dùng cho app không đọc được ô nhập |
+| **⌃⌥C** | Copy câu đã sửa |
+| Menu bar › **Cài đặt…** | Độ mờ nền, góc màn hình, độ rộng panel, click xuyên qua, Dịch |
 
-Trạng thái ở góc panel gồm: Đang chờ, Đang kiểm tra, Không có lỗi ngữ pháp, Có lỗi, Không phải tiếng Anh, Không chắc chắn (model muốn viết lại cả câu nên kết quả bị bỏ), Lỗi model.
+Panel chỉ để xem, click sẽ đi xuyên xuống app phía sau. Muốn dời panel thì kéo dải header ở trên cùng.
 
-## Giới hạn đã biết
+**Giới hạn:** chỉ kiểm tra một câu (câu chứa con trỏ) trừ khi bôi đen. Bỏ qua câu dưới 3 từ, câu không phải tiếng Anh và ô mật khẩu. Một số app không đọc được ô nhập ([danh sách](docs/app-compatibility.md)), khi đó dùng ⌃⌥G. Model vẫn có thể bỏ sót hoặc sửa hơi quá tay ([số liệu](docs/model-benchmark.md)).
 
-- Khi không bôi đen, chỉ kiểm tra **một câu** (câu chứa con trỏ), không kiểm tra cả đoạn. Câu dưới 3 từ và câu không phải tiếng Anh bị bỏ qua. Muốn kiểm tra một từ hay nhiều câu thì bôi đen đoạn đó.
-- Ô mật khẩu không bao giờ được đọc.
-- Chrome và các app Electron (Slack, Teams) được bật cây accessibility tự động, nhưng mỗi app hỗ trợ một khác. Xem [docs/app-compatibility.md](docs/app-compatibility.md). App nào không đọc được thì dùng ⌃⌥G.
-- Model vẫn có thể bỏ sót lỗi hoặc sửa hơi quá tay, ví dụ đổi "u" thành "you". Xem số liệu ở [docs/model-benchmark.md](docs/model-benchmark.md).
+**Model** nằm ở `~/Library/Application Support/Grammar/Models/`. Xoá thư mục này để xoá model. Nếu mạng chặn Hugging Face, tải [file model](https://huggingface.co/bartowski/Qwen2.5-7B-Instruct-GGUF/blob/main/Qwen2.5-7B-Instruct-Q4_K_M.gguf) bằng cách khác rồi đặt vào thư mục này.
 
 ## Phát triển
 
-```bash
-# Unit test (test với model thật tự bỏ qua nếu chưa có model)
-xcodebuild -project GrammarApp.xcodeproj -scheme GrammarApp -derivedDataPath build test
+Cần Xcode 27 và [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
 
-# Benchmark model trên golden set
-xcodebuild -project GrammarApp.xcodeproj -scheme GrammarBench -configuration Release -derivedDataPath build build
-./build/Build/Products/Release/GrammarBench --model GrammarApp/Resources/Models/Qwen2.5-7B-Instruct-Q4_K_M.gguf --verbose
+```bash
+./scripts/fetch-llama.sh            # tải llama.xcframework vào Vendor/
+./scripts/download-model.sh bartowski/Qwen2.5-7B-Instruct-GGUF Qwen2.5-7B-Instruct-Q4_K_M.gguf
+                                    # model cho test/benchmark, vào GrammarApp/Resources/Models/
+
+./scripts/create-signing-cert.sh    # một lần: chứng chỉ ký để giữ quyền Accessibility qua các lần cài
+./scripts/install.sh                # build Release, cài vào /Applications, mở app
+./scripts/make-dmg.sh               # tạo dist/Grammar-<version>.dmg
+
+xcodebuild -project GrammarApp.xcodeproj -scheme GrammarApp -derivedDataPath build test
 ```
 
 Cấu trúc:
 
 ```
-GrammarKit/     framework logic thuần: Diff (WordDiff, EditGuard, DiffHighlighter), Panel (PanelLayout, PanelSettings),
-                Pipeline (SentenceExtractor, LanguageGate, CheckCoordinator, ResultCache),
-                Engine (LlamaGrammarEngine, GrammarPrompt, OutputSanitizer, ModelLocator)
-GrammarApp/     app: App (AppModel, menu bar, quyền), Capture (Accessibility, phím tắt), UI (panel)
-GrammarAppTests/  unit test + Fixtures/golden.json
-GrammarBench/   tool benchmark model
-scripts/        fetch-llama.sh, download-model.sh
-windows/        bản Windows (C#, .NET 10, WPF), xem windows/README.md
+GrammarKit/       logic: Diff, Panel, Pipeline, Engine (llama.cpp, tìm và tải model)
+GrammarApp/       app: menu bar, quyền, đọc ô nhập, panel
+GrammarAppTests/  unit test + golden set
+GrammarBench/     benchmark model
+windows/          bản Windows (C#)
 ```
 
-**Bản Windows dùng chung logic dưới dạng bản port C#** (`windows/src/Grammar.Core/`). Sửa prompt, EditGuard, normalizer, diff hay bộ lọc ngôn ngữ ở `GrammarKit/` thì phải sửa cả bản C#, rồi chạy `dotnet test windows/Grammar.sln`. Golden set `GrammarAppTests/Fixtures/golden.json` dùng chung cho cả hai bản. Xem mục "Giữ hai bản khớp nhau" trong [windows/README.md](windows/README.md).
-
-**Chẩn đoán khi app không đọc đúng câu đang gõ** (ví dụ trình soạn thảo web): chạy `swift scripts/ax-probe.swift <bundle-id>` (ví dụ `com.google.Chrome`), chuyển sang app đó và đặt con trỏ vào ô đang gõ. Script đọc 3 giây sau khi app đó được đưa lên trước. Script chỉ đọc, và in ra những gì app trả về qua Accessibility: vị trí con trỏ theo `AXSelectedTextRange` và đoạn văn đọc qua text marker. Với ô hỗ trợ text marker (Chrome, Safari, Electron), Grammar đọc đoạn văn chứa con trỏ qua text marker, vì `AXSelectedTextRange` có thể bị lệch so với `AXValue` trong trình soạn thảo có định dạng.
-
-Model mặc định được khai báo ở `ModelLocator.defaultModelFileName`. Khi dev có thể chỉ định file model khác bằng biến môi trường `GRAMMAR_MODEL_PATH`.
+- **Đổi model:** sửa tên file, URL, SHA256 và kích thước trong `GrammarKit/Engine/ModelLocator.swift`. Khi dev có thể trỏ tới file khác bằng biến môi trường `GRAMMAR_MODEL_PATH`.
+- **Sửa logic dùng chung** (prompt, EditGuard, diff, bộ lọc ngôn ngữ) thì phải sửa cả bản C# trong `windows/src/Grammar.Core/`, rồi chạy `dotnet test windows/Grammar.sln`.
+- **App không đọc đúng câu đang gõ:** chạy `swift scripts/ax-probe.swift <bundle-id>` để xem app đó trả về gì qua Accessibility.

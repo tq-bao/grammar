@@ -157,3 +157,81 @@ final class LlamaEngineIntegrationTests: XCTestCase {
         }
     }
 }
+
+/// Thứ tự tìm model: biến môi trường → Application Support → bundle.
+final class ModelLocatorTests: XCTestCase {
+    private var root: URL!
+
+    override func setUpWithError() throws {
+        root = FileManager.default.temporaryDirectory.appendingPathComponent("ModelLocatorTests-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+    }
+
+    override func tearDownWithError() throws {
+        try? FileManager.default.removeItem(at: root)
+    }
+
+    /// Tạo một bundle giả có `Resources/Models/<file>`.
+    private func makeBundle(withModel fileName: String?) throws -> Bundle {
+        let bundleURL = root.appendingPathComponent("Fake.bundle")
+        let models = bundleURL.appendingPathComponent("Contents/Resources/Models")
+        try FileManager.default.createDirectory(at: models, withIntermediateDirectories: true)
+        if let fileName {
+            try Data("GGUF".utf8).write(to: models.appendingPathComponent(fileName))
+        }
+        return try XCTUnwrap(Bundle(url: bundleURL))
+    }
+
+    private func makeAppSupport(withModel fileName: String?) throws -> URL {
+        let dir = root.appendingPathComponent("AppSupport/Grammar/Models")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        if let fileName {
+            try Data("GGUF".utf8).write(to: dir.appendingPathComponent(fileName))
+        }
+        return dir
+    }
+
+    func testApplicationSupportWinsOverBundle() throws {
+        let bundle = try makeBundle(withModel: "m.gguf")
+        let appSupport = try makeAppSupport(withModel: "m.gguf")
+        let url = try ModelLocator.locate(fileName: "m.gguf", bundle: bundle, environment: [:], applicationSupportDirectory: appSupport)
+        XCTAssertEqual(url.standardizedFileURL, appSupport.appendingPathComponent("m.gguf").standardizedFileURL)
+    }
+
+    func testFallsBackToBundle() throws {
+        let bundle = try makeBundle(withModel: "m.gguf")
+        let appSupport = try makeAppSupport(withModel: nil)
+        let url = try ModelLocator.locate(fileName: "m.gguf", bundle: bundle, environment: [:], applicationSupportDirectory: appSupport)
+        XCTAssertTrue(url.path.hasSuffix("Contents/Resources/Models/m.gguf"), url.path)
+    }
+
+    func testEnvironmentWinsOverEverything() throws {
+        let bundle = try makeBundle(withModel: "m.gguf")
+        let appSupport = try makeAppSupport(withModel: "m.gguf")
+        let custom = root.appendingPathComponent("custom.gguf")
+        try Data("GGUF".utf8).write(to: custom)
+        let url = try ModelLocator.locate(
+            fileName: "m.gguf", bundle: bundle,
+            environment: [ModelLocator.environmentKey: custom.path],
+            applicationSupportDirectory: appSupport
+        )
+        XCTAssertEqual(url.path, custom.path)
+    }
+
+    func testNotFoundAnywhereThrows() throws {
+        let bundle = try makeBundle(withModel: nil)
+        let appSupport = try makeAppSupport(withModel: nil)
+        XCTAssertThrowsError(try ModelLocator.locate(fileName: "m.gguf", bundle: bundle, environment: [:], applicationSupportDirectory: appSupport)) { error in
+            XCTAssertEqual(error as? GrammarEngineError, .modelNotFound("m.gguf"))
+        }
+    }
+
+    func testDownloadDestinationIsInsideModelsDirectory() throws {
+        let appSupport = try makeAppSupport(withModel: nil)
+        XCTAssertEqual(
+            ModelLocator.downloadDestination(modelsDirectory: appSupport),
+            appSupport.appendingPathComponent(ModelLocator.defaultModelFileName)
+        )
+        XCTAssertTrue(ModelLocator.applicationSupportModelsDirectory()?.path.hasSuffix("Application Support/Grammar/Models") ?? false)
+    }
+}

@@ -54,6 +54,9 @@ struct TwoPaneView: View {
             if !model.isTrusted {
                 PermissionView()
             }
+            if coordinator.state.isWaitingForModel, coordinator.state != .loadingModel {
+                ModelDownloadView(state: coordinator.state)
+            }
 
             HStack {
                 Text("Câu đang gõ").font(.headline)
@@ -89,6 +92,11 @@ struct TwoPaneView: View {
         // Viền mờ màu nền giúp chữ vẫn đọc được khi nền gần như trong suốt.
         .compositingGroup()
         .shadow(color: Color(nsColor: .windowBackgroundColor).opacity(0.9), radius: 1.5)
+    }
+
+    static func percent(_ received: Int64, _ total: Int64) -> Int {
+        guard total > 0 else { return 0 }
+        return Int(min(100, max(0, Double(received) / Double(total) * 100)))
     }
 
     private func placeholder(_ text: String) -> AttributedString {
@@ -143,6 +151,12 @@ struct TwoPaneView: View {
             return s
         case .loadingModel:
             return placeholder("Đang nạp model…")
+        case .modelMissing:
+            return placeholder("Cần tải model trước khi kiểm tra.")
+        case let .downloadingModel(received, total):
+            return placeholder("Đang tải model… \(Self.percent(received, total))%")
+        case .verifyingModel:
+            return placeholder("Đang kiểm tra model…")
         case .idle:
             return placeholder("—")
         }
@@ -167,6 +181,9 @@ private struct StatusBadge: View {
         switch state {
         case .idle: return "Đang chờ"
         case .loadingModel: return "Đang nạp model"
+        case .modelMissing: return "Cần tải model"
+        case let .downloadingModel(received, total): return "Đang tải model \(TwoPaneView.percent(received, total))%"
+        case .verifyingModel: return "Đang kiểm tra model"
         case .checking: return "Đang kiểm tra"
         case .ok: return "Không có lỗi ngữ pháp"
         case let .corrected(diff):
@@ -182,7 +199,8 @@ private struct StatusBadge: View {
         if isPaused { return "pause.circle" }
         switch state {
         case .idle: return "keyboard"
-        case .loadingModel, .checking: return "hourglass"
+        case .loadingModel, .checking, .verifyingModel: return "hourglass"
+        case .modelMissing, .downloadingModel: return "arrow.down.circle"
         case .ok: return "checkmark.circle"
         case .corrected: return "exclamationmark.circle"
         case .notEnglish: return "globe"
@@ -196,8 +214,44 @@ private struct StatusBadge: View {
         switch state {
         case .ok: return .green
         case .corrected, .modelError: return .red
-        case .uncertain: return .orange
+        case .uncertain, .modelMissing: return .orange
         default: return .secondary
         }
+    }
+}
+
+/// Hướng dẫn tải model và tiến độ tải. Panel không nhận chuột nên nút tải nằm ở menu bar.
+private struct ModelDownloadView: View {
+    let state: CheckState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            switch state {
+            case let .downloadingModel(received, total):
+                Label("Đang tải model", systemImage: "arrow.down.circle")
+                    .font(.subheadline.bold())
+                HStack(spacing: 8) {
+                    ProgressView(value: Double(received), total: Double(max(total, 1)))
+                    Text("\(TwoPaneView.percent(received, total))%")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(minWidth: 34, alignment: .trailing)
+                }
+            case .verifyingModel:
+                Label("Đang kiểm tra model…", systemImage: "checkmark.shield")
+                    .font(.subheadline.bold())
+                ProgressView()
+                    .progressViewStyle(.linear)
+            default:
+                Label("Cần tải model", systemImage: "arrow.down.circle")
+                    .font(.subheadline.bold())
+                Text("Chọn biểu tượng Grammar trên menu bar › \"Tải model…\". Chỉ tải một lần, sau đó app chạy hoàn toàn offline.")
+                    .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.blue.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
     }
 }

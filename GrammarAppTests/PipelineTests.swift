@@ -463,3 +463,78 @@ final class CheckCoordinatorTranslationTests: XCTestCase {
         XCTAssertEqual(c.translation, .failed("Model gặp lỗi khi dịch."))
     }
 }
+
+/// Trạng thái chưa có model: cần tải, đang tải, đang kiểm tra (spec `checker-window` › "Trạng thái kiểm tra").
+@MainActor
+final class CheckCoordinatorModelStateTests: XCTestCase {
+    private func makeCoordinator() -> CheckCoordinator {
+        CheckCoordinator(debounce: .milliseconds(20))
+    }
+
+    func testSubmitWhileModelMissingKeepsStateAndDoesNotCheck() async {
+        let c = makeCoordinator()
+        c.setModelMissing()
+        c.submit("She go to school yesterday.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .modelMissing)
+        XCTAssertEqual(c.sentence, "She go to school yesterday.")
+        XCTAssertEqual(c.engineCallCount, 0)
+    }
+
+    func testShortTextWhileModelMissingKeepsHint() async {
+        let c = makeCoordinator()
+        c.setModelMissing()
+        c.submit("ok", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .modelMissing)
+    }
+
+    func testSubmitWhileDownloadingKeepsProgress() async {
+        let c = makeCoordinator()
+        c.setModelDownloadProgress(received: 1_200, total: 4_700)
+        c.submit("They was happy today.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .downloadingModel(received: 1_200, total: 4_700))
+        XCTAssertEqual(c.engineCallCount, 0)
+    }
+
+    func testVerifyingState() {
+        let c = makeCoordinator()
+        c.setVerifyingModel()
+        XCTAssertEqual(c.state, .verifyingModel)
+        XCTAssertTrue(c.state.isWaitingForModel)
+    }
+
+    func testEngineAfterDownloadChecksPendingSentence() async {
+        let c = makeCoordinator()
+        c.setModelMissing()
+        c.submit("She go to school yesterday.", from: .focusedField)
+        await c.waitForPendingCheck()
+        c.setModelDownloadProgress(received: 10, total: 10)
+        c.setVerifyingModel()
+        c.setLoadingModel()
+
+        c.setEngine(FakeEngine(answers: ["She go to school yesterday.": "She went to school yesterday."]))
+        await c.waitForPendingCheck()
+        guard case let .corrected(diff) = c.state else { return XCTFail("state = \(c.state)") }
+        XCTAssertEqual(diff.corrected, "She went to school yesterday.")
+    }
+
+    func testEngineAfterDownloadWithoutSentenceIsIdle() {
+        let c = makeCoordinator()
+        c.setModelMissing()
+        c.setEngine(FakeEngine(answers: [:]))
+        XCTAssertEqual(c.state, .idle)
+    }
+
+    func testDownloadErrorShowsModelError() async {
+        let c = makeCoordinator()
+        c.setModelDownloadProgress(received: 5, total: 10)
+        c.setEngineError("Không tải được model: mất mạng")
+        XCTAssertEqual(c.state, .modelError("Không tải được model: mất mạng"))
+        c.submit("They was happy today.", from: .focusedField)
+        await c.waitForPendingCheck()
+        XCTAssertEqual(c.state, .modelError("Không tải được model: mất mạng"))
+        XCTAssertEqual(c.engineCallCount, 0)
+    }
+}

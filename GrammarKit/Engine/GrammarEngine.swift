@@ -22,7 +22,7 @@ public enum GrammarEngineError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case let .modelNotFound(name):
-            "Không tìm thấy model \(name). Chạy scripts/download-model.sh rồi build lại app."
+            "Không tìm thấy model \(name). Chọn biểu tượng Grammar trên menu bar › \"Tải model\"."
         case let .modelLoadFailed(path):
             "Không nạp được model tại \(path). File có thể bị hỏng, hãy tải lại."
         case .contextCreationFailed:

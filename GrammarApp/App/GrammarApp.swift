@@ -1,4 +1,5 @@
 import AppKit
+import GrammarKit
 import SwiftUI
 
 @main
@@ -35,6 +36,7 @@ struct MenuBarContent: View {
         Button("Copy câu đã sửa  (⌃⌥C)") { model.copyCorrection() }
             .disabled(!model.canCopyCorrection)
         Divider()
+        ModelMenuItems(model: model)
         if !model.isTrusted {
             Button("Cấp quyền Accessibility…") { model.openAccessibilitySettings() }
         }
@@ -48,5 +50,33 @@ struct MenuBarContent: View {
         Divider()
         Button("Thoát Grammar") { NSApplication.shared.terminate(nil) }
             .keyboardShortcut("q")
+    }
+}
+
+/// Mục tải model trên menu bar. Ẩn khi model đã sẵn sàng hoặc đang nạp.
+struct ModelMenuItems: View {
+    let model: AppModel
+
+    var body: some View {
+        switch model.modelStatus {
+        case let .missing(partial) where partial > 0:
+            Button("Tải tiếp model (đã tải \(TwoPaneView.percent(partial, ModelLocator.defaultModelSize))%)…") { model.downloadModel() }
+            Divider()
+        case .missing:
+            Button("Tải model…") { model.downloadModel() }
+            Divider()
+        case let .downloading(received, total):
+            Text("Đang tải model… \(TwoPaneView.percent(received, total))%")
+            Button("Huỷ tải") { model.cancelDownload() }
+            Divider()
+        case .verifying:
+            Text("Đang kiểm tra model…")
+            Divider()
+        case .failed:
+            Button("Thử lại tải model") { model.downloadModel() }
+            Divider()
+        case .loading, .ready, .loadFailed:
+            EmptyView()
+        }
     }
 }
